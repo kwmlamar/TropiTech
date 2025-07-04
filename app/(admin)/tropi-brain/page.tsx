@@ -24,7 +24,6 @@ type Insight = {
 export default function TropiBrain() {
   const [insights, setInsights] = useState<Insight[]>([])
   const [generating, setGenerating] = useState(false)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchInsights()
@@ -40,10 +39,8 @@ export default function TropiBrain() {
 
       if (error) throw error
       setInsights(data || [])
-    } catch (error) {
+    } catch {
       toast.error("Failed to fetch insights from database")
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -71,7 +68,7 @@ export default function TropiBrain() {
         setInsights([data[0], ...insights])
         toast.success("Successfully created a new market insight")
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to create new insight")
     } finally {
       setGenerating(false)
@@ -89,7 +86,10 @@ export default function TropiBrain() {
     return <Badge className={variants[status as keyof typeof variants] || "bg-muted"}>{status}</Badge>
   }
 
-  const getCategoryBadge = (category: string) => {
+  const getCategoryBadge = (category?: string) => {
+    if (!category) {
+      return <Badge variant="outline" className="bg-gray-100 text-gray-800">Uncategorized</Badge>
+    }
     const variants = {
       "Weather Management": "bg-blue-100 text-blue-800",
       "Cost Management": "bg-green-100 text-green-800",
@@ -99,7 +99,7 @@ export default function TropiBrain() {
       "Safety": "bg-yellow-100 text-yellow-800",
       "Collaboration": "bg-indigo-100 text-indigo-800"
     }
-    return <Badge variant="outline" className={variants[category as keyof typeof variants]}>{category}</Badge>
+    return <Badge variant="outline" className={variants[category as keyof typeof variants] || "bg-gray-100 text-gray-800"}>{category}</Badge>
   }
 
   const getImpactColor = (score: number) => {
@@ -252,7 +252,7 @@ export default function TropiBrain() {
             <CardDescription>Breakdown of problems by construction domain</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {[...new Set(insights.map(i => i.category))].map(category => {
+            {[...new Set(insights.map(i => i.category).filter(Boolean))].map(category => {
               const count = insights.filter(i => i.category === category).length
               const avgImpact = Math.round(
                 insights.filter(i => i.category === category)

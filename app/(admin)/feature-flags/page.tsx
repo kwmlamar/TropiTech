@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 const mockFeatureFlags = [
   { 
     id: 1, 

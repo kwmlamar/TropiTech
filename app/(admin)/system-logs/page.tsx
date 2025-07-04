@@ -102,7 +102,7 @@ const mockLogs = [
 ]
 
 export default function SystemLogs() {
-  const [logs, setLogs] = useState(mockLogs)
+  const [logs] = useState(mockLogs)
   const [searchTerm, setSearchTerm] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
   const [severityFilter, setSeverityFilter] = useState("all")

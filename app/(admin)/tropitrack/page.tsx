@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
-import { TrendingUp, Users, Building2, DollarSign, Activity, Calendar, Target, Clock, Package, FileText, Brain, ExternalLink, Settings, Plus, BarChart3, Timer, CheckCircle, AlertCircle, Play, Pause, Eye, Edit, Trash2 } from "lucide-react"
+import { TrendingUp, Clock, Plus, BarChart3, Timer, CheckCircle, Play, Eye, Edit, Target, DollarSign } from "lucide-react"
 import { createClient } from "@/utils/supabase/server"
-import { formatDistanceToNow, format } from "date-fns"
+import { format } from "date-fns"
 
 async function getTropiTrackStats() {
   const supabase = await createClient()

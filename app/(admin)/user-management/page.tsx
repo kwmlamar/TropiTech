@@ -52,7 +52,6 @@ export default function UserManagement() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">User Management</h1>
-        <p className="text-muted-foreground">Manage registered users across all companies</p>
       </div>
 
       {/* Stats Cards */}

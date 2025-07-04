@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowRight, BarChart3, Users, Building2, Settings, Brain, Shield } from "lucide-react"
-import { Link } from "react-router-dom"
+import Link from "next/link"
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 export default function Index() {
   return (
@@ -17,7 +20,7 @@ export default function Index() {
               <h1 className="text-xl font-bold text-foreground">TropiTech Command Center</h1>
             </div>
             <Button asChild>
-              <Link to="/dashboard">Access Dashboard</Link>
+              <Link href="/dashboard">Access Dashboard</Link>
             </Button>
           </div>
         </div>
@@ -37,7 +40,7 @@ export default function Index() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" asChild>
-              <Link to="/dashboard">
+              <Link href="/dashboard">
                 Get Started <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
@@ -187,7 +190,7 @@ export default function Index() {
             to streamline operations and drive growth.
           </p>
           <Button size="lg" asChild>
-            <Link to="/dashboard">
+            <Link href="/dashboard">
               Start Managing Today <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
           </Button>

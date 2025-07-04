@@ -37,10 +37,9 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 interface SidebarProps {
   children: React.ReactNode
   className?: string
-  collapsible?: boolean
 }
 
-export function Sidebar({ children, className, collapsible }: SidebarProps) {
+export function Sidebar({ children, className }: SidebarProps) {
   const { collapsed } = useSidebar()
   
   return (

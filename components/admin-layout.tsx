@@ -1,10 +1,6 @@
 import { AdminLayoutClient } from "@/components/admin-layout-client"
 import { createClient } from "@/utils/supabase/server"
 
-interface AdminLayoutProps {
-  children: React.ReactNode
-}
-
 async function getCurrentUser() {
   try {
     const supabase = await createClient()
@@ -12,7 +8,7 @@ async function getCurrentUser() {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
-      console.warn('No authenticated user found:', authError?.message)
+      // console.warn('No authenticated user found:', authError?.message)
       return null
     }
 
@@ -24,7 +20,7 @@ async function getCurrentUser() {
       .single()
 
     if (profileError) {
-      console.warn('Error fetching profile:', profileError.message)
+      // console.warn('Error fetching profile:', profileError.message)
     }
 
     return {
@@ -33,8 +29,8 @@ async function getCurrentUser() {
       name: profile?.full_name || user.user_metadata?.full_name || 'Admin User',
       role: profile?.role || 'admin'
     }
-  } catch (error) {
-    console.error('Error fetching user data:', error)
+  } catch {
+    // console.error('Error fetching user data:', error)
     return null
   }
 }

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Brain, Building2, Calendar, CreditCard, Flag, Settings, Users, User } from "lucide-react"
+import { Building2, Calendar, CreditCard, Flag, Settings, Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -14,7 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
 

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Users, Building2, DollarSign, Activity, Calendar, Target, Clock, Package, FileText, Brain, ExternalLink, Settings } from "lucide-react"
+import { TrendingUp, Users, Building2, DollarSign, Activity, Calendar, Clock, Package, FileText, Brain, ExternalLink, Settings } from "lucide-react"
 import { createClient } from "@/utils/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
@@ -146,11 +146,11 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-2">
 
       
       {/* Platform Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -211,7 +211,10 @@ export default async function DashboardPage() {
 
 
       {/* TropiTech Suite */}
-      <Card className="shadow-sm">
+      <Card className="shadow-sm relative" style={{
+        clipPath: 'path("M 0 0 L 25% 0 L 25% 120 A 10 10 0 0 1 35% 120 L 65% 120 A 10 10 0 0 1 75% 120 L 75% 0 L 100% 0 L 100% 100% L 0 100% Z")',
+        borderRadius: '24px'
+      }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
@@ -219,12 +222,9 @@ export default async function DashboardPage() {
             </div>
             TropiTech Suite
           </CardTitle>
-          <CardDescription>
-            Manage your ecosystem of construction technology products
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             {tropiTechProducts.map((product) => {
               const IconComponent = product.icon
               const ActionIcon = product.actionIcon
@@ -282,7 +282,7 @@ export default async function DashboardPage() {
 
 
       {/* Platform Activity & Companies */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -361,7 +361,7 @@ export default async function DashboardPage() {
           <CardDescription>System status and performance metrics</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <div className="text-center">
               <div className="text-3xl font-bold text-success mb-2">99.9%</div>
               <div className="text-sm text-muted-foreground">Uptime</div>
@@ -390,7 +390,7 @@ export default async function DashboardPage() {
           <CardDescription>Authentication and security monitoring</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-red-600 mb-2">{stats.totalSessions.toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Total Sessions</div>
@@ -422,7 +422,7 @@ export default async function DashboardPage() {
                   <div className="space-y-1">
                     <p className="text-sm font-medium">
                       {log.payload && typeof log.payload === 'object' && 'action' in log.payload 
-                        ? (log.payload as any).action 
+                        ? (log.payload as { action: string }).action 
                         : 'Security Event'}
                     </p>
                     <p className="text-xs text-muted-foreground">
