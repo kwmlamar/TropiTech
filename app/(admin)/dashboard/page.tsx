@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Users, Building2, DollarSign, Activity, Calendar, Clock, Package, FileText, Brain, ExternalLink, Settings } from "lucide-react"
+import { TrendingUp, Users, Building2, DollarSign, Activity, Calendar, Clock, Package, FileText, Brain, ExternalLink, Settings, Plus } from "lucide-react"
 import { createClient } from "@/utils/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
@@ -48,8 +48,6 @@ async function getDashboardStats() {
     .order('created_at', { ascending: false })
     .limit(4)
 
-
-
   // Get auth metrics from auth schema
   const { count: totalSessions } = await supabase
     .from('sessions')
@@ -82,8 +80,41 @@ async function getDashboardStats() {
   }
 }
 
+// async function getCurrentUser() {
+//   try {
+//     const supabase = await createClient()
+    
+//     const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+//     if (authError || !user) {
+//       return null
+//     }
+
+//     // Get user profile data
+//     const { data: profile, error: profileError } = await supabase
+//       .from('profiles')
+//       .select('full_name, email, role')
+//       .eq('user_id', user.id)
+//       .single()
+
+//     if (profileError) {
+//       // console.warn('Error fetching profile:', profileError.message)
+//     }
+
+//     return {
+//       id: user.id,
+//       email: user.email || profile?.email || 'Unknown',
+//       name: profile?.full_name || user.user_metadata?.full_name || 'Admin User',
+//       role: profile?.role || 'admin'
+//     }
+//   } catch {
+//     return null
+//   }
+// }
+
 export default async function DashboardPage() {
   const stats = await getDashboardStats()
+  // const user = await getCurrentUser() // Temporarily commented out since not used
 
   // TropiTech Suite products data
   const tropiTechProducts = [
@@ -147,68 +178,72 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-3xl">
+          Add Product
+        </Button>
+      </div>
 
-      
-      {/* Platform Stats Grid */}
+      {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200 relative overflow-hidden bg-gray-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-base font-medium text-white">Total Users</CardTitle>
+            <Users className="h-5 w-5 text-white" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{stats.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              <TrendingUp className="h-3 w-3 text-success" />
+            <div className="text-4xl font-bold text-white">{stats.totalUsers.toLocaleString()}</div>
+            <p className="text-sm text-white flex items-center gap-1 mt-1">
+              <TrendingUp className="h-4 w-4 text-white" />
               Active platform users
             </p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Companies</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">{stats.activeCompanies.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              <TrendingUp className="h-3 w-3 text-success" />
-              Currently active
-            </p>
-          </CardContent>
-        </Card>
+                  <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Active Companies</CardTitle>
+              <Building2 className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-success">{stats.activeCompanies.toLocaleString()}</div>
+              <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                <TrendingUp className="h-4 w-4 text-success" />
+                Currently active
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-accent">${(stats.totalRevenue / 100).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              <TrendingUp className="h-3 w-3 text-success" />
-              From active subscriptions
-            </p>
-          </CardContent>
-        </Card>
+                  <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Monthly Revenue</CardTitle>
+              <DollarSign className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-green-600">${(stats.totalRevenue / 100).toLocaleString()}</div>
+              <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                <TrendingUp className="h-4 w-4 text-success" />
+                From active subscriptions
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-warning">{stats.activeSessions.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              <TrendingUp className="h-3 w-3 text-success" />
-              Current user sessions
-            </p>
-          </CardContent>
-        </Card>
+                  <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-base font-medium">Active Sessions</CardTitle>
+              <Activity className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-warning">{stats.activeSessions.toLocaleString()}</div>
+              <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                <TrendingUp className="h-4 w-4 text-success" />
+                Current user sessions
+              </p>
+            </CardContent>
+          </Card>
       </div>
-
-
 
       {/* TropiTech Suite */}
       <Card className="shadow-sm relative" style={{
@@ -216,12 +251,14 @@ export default async function DashboardPage() {
         borderRadius: '24px'
       }}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-              <Building2 className="h-5 w-5 text-white" />
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              TropiTech Suite
+            </CardTitle>
+            <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
+              <Plus className="h-4 w-4 text-gray-600" />
             </div>
-            TropiTech Suite
-          </CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -232,21 +269,26 @@ export default async function DashboardPage() {
               return (
                 <Card 
                   key={product.id} 
-                  className={`shadow-sm hover:shadow-md transition-all duration-200 border-2 ${product.borderColor} hover:scale-105`}
+                  className={`shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 ${product.bgColor} group relative overflow-hidden`}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`p-2 rounded-lg ${product.bgColor}`}>
-                        <IconComponent className={`h-5 w-5 ${product.color}`} />
-                      </div>
-                      <Badge variant={product.statusVariant} className="text-xs">
+                  {/* Large background icon */}
+                  <div className="absolute -bottom-16 -right-16 transition-opacity duration-300">
+                    <IconComponent className={`${product.color}`} style={{ width: '300px', height: '300px', opacity: '0.05' }} />
+                  </div>
+                  
+                  {/* Subtle gradient overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                  
+                  <CardHeader className="pb-3 relative z-10">
+                    <div className="flex items-center justify-end mb-3">
+                      <Badge variant={product.statusVariant} className="text-xs font-medium px-2 py-1 bg-white/90 text-gray-800 shadow-sm">
                         {product.status}
                       </Badge>
                     </div>
-                    <CardTitle className="text-lg">{product.name}</CardTitle>
+                    <CardTitle className="text-xl font-bold text-gray-900 drop-shadow-sm">{product.name}</CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm text-muted-foreground mb-4">
+                  <CardContent className="pt-0 relative z-10">
+                    <p className="text-sm text-gray-700 mb-6 leading-relaxed font-medium drop-shadow-sm">
                       {product.description}
                     </p>
                     {product.status === 'Live' ? (
@@ -254,7 +296,7 @@ export default async function DashboardPage() {
                         <Button 
                           variant="default"
                           size="sm" 
-                          className="w-full"
+                          className="w-full group-hover:shadow-md transition-all duration-300"
                         >
                           <ActionIcon className="h-4 w-4 mr-2" />
                           {product.action}
@@ -264,7 +306,7 @@ export default async function DashboardPage() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="w-full"
+                        className="w-full opacity-60"
                         disabled
                       >
                         <ActionIcon className="h-4 w-4 mr-2" />
@@ -278,8 +320,6 @@ export default async function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-
 
       {/* Platform Activity & Companies */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">

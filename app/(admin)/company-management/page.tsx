@@ -92,7 +92,7 @@ export default function CompanyManagement() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Company Management</h1>
@@ -100,7 +100,7 @@ export default function CompanyManagement() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
             <CardDescription>Total Companies</CardDescription>
@@ -192,7 +192,7 @@ export default function CompanyManagement() {
       </Card>
 
       {/* Subscription Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Card className="border-border">
           <CardHeader>
             <CardTitle>Subscription Distribution</CardTitle>

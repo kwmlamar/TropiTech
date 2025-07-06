@@ -89,7 +89,7 @@ export default function FeatureFlags() {
   const totalCompaniesWithFlags = new Set(flags.flatMap(flag => flag.companies)).size
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Feature Flags</h1>
@@ -97,7 +97,7 @@ export default function FeatureFlags() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
             <CardDescription>Total Feature Flags</CardDescription>
@@ -207,7 +207,7 @@ export default function FeatureFlags() {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Card className="border-border">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>

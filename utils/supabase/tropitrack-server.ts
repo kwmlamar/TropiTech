@@ -7,11 +7,14 @@ const tropiTrackUrl = process.env.NEXT_PUBLIC_TROPITRACK_SUPABASE_URL
 const tropiTrackAnonKey = process.env.NEXT_PUBLIC_TROPITRACK_SUPABASE_ANON_KEY
 const tropiTrackServiceKey = process.env.TROPITRACK_SUPABASE_SERVICE_ROLE_KEY
 
-if (!tropiTrackUrl || !tropiTrackAnonKey) {
-  throw new Error('Missing TropiTrack Supabase environment variables')
-}
+// Check if TropiTrack environment variables are available
+const isTropiTrackAvailable = tropiTrackUrl && tropiTrackAnonKey
 
 export async function createTropiTrackClient() {
+  if (!isTropiTrackAvailable) {
+    throw new Error('TropiTrack environment variables not configured')
+  }
+
   const cookieStore = await cookies()
 
   return createServerClient(
@@ -47,8 +50,8 @@ export async function createTropiTrackClient() {
 
 // Service role client for admin operations (use with caution)
 export function createTropiTrackServiceClient() {
-  if (!tropiTrackServiceKey) {
-    throw new Error('Missing TropiTrack service role key')
+  if (!isTropiTrackAvailable || !tropiTrackServiceKey) {
+    throw new Error('TropiTrack environment variables not configured')
   }
 
   return createClient(
@@ -203,10 +206,22 @@ export const tropiTrackServerApi = {
     const supabase = await createTropiTrackClient()
     
     const { data, error } = await supabase
-      .from('users')
-      .select('*')
+      .from('profiles')
+      .select(`
+        id,
+        email,
+        name,
+        first_name,
+        last_name,
+        role,
+        is_active,
+        company_id,
+        created_at,
+        updated_at,
+        last_login_at
+      `)
       .eq('is_active', true)
-      .order('full_name', { ascending: true })
+      .order('name', { ascending: true })
 
     return { data, error }
   },
@@ -215,8 +230,20 @@ export const tropiTrackServerApi = {
     const supabase = await createTropiTrackClient()
     
     const { data, error } = await supabase
-      .from('users')
-      .select('*')
+      .from('profiles')
+      .select(`
+        id,
+        email,
+        name,
+        first_name,
+        last_name,
+        role,
+        is_active,
+        company_id,
+        created_at,
+        updated_at,
+        last_login_at
+      `)
       .eq('id', userId)
       .single()
 
@@ -332,11 +359,36 @@ export const tropiTrackServerApi = {
   async getAllUsers() {
     const supabase = createTropiTrackServiceClient()
     
+    console.log('Fetching users from TropiTrack profiles table...')
+    
     const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .order('full_name', { ascending: true })
+      .from('profiles')
+      .select(`
+        id,
+        email,
+        name,
+        first_name,
+        last_name,
+        role,
+        is_active,
+        company_id,
+        created_at,
+        updated_at,
+        last_login_at,
+        companies (
+          id,
+          name,
+          state
+        )
+      `)
+      .order('name', { ascending: true })
 
-    return { data, error }
+    if (error) {
+      console.error('Error fetching TropiTrack users:', error)
+      return { data: null, error }
+    }
+
+    console.log('TropiTrack getAllUsers result:', { dataCount: data?.length || 0, error: null })
+    return { data, error: null }
   }
 } 

@@ -143,7 +143,7 @@ export default function SystemLogs() {
   const todayLogsCount = logs.length // Assuming all logs are from today for demo
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">System Logs</h1>
@@ -151,7 +151,7 @@ export default function SystemLogs() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
             <CardDescription>Today's Activities</CardDescription>
@@ -270,7 +270,7 @@ export default function SystemLogs() {
       </Card>
 
       {/* Quick Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Card className="border-border">
           <CardHeader>
             <CardTitle>Recent Security Events</CardTitle>

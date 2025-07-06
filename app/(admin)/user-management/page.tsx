@@ -1,169 +1,196 @@
-'use client'
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
+import { createClient } from "@/utils/supabase/server"
+import { Users, UserCheck, Shield, UserPlus } from "lucide-react"
+import UserManagementClient from "./user-management-client"
+import { tropiTrackServerApi } from "@/utils/supabase/tropitrack-server"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+declare global {
+  var process: {
+    env: {
+      NEXT_PUBLIC_TROPITRACK_SUPABASE_URL?: string;
+      NEXT_PUBLIC_TROPITRACK_SUPABASE_ANON_KEY?: string;
+    };
+  };
+}
 
-const mockUsers = [
-  { id: 1, name: "John Smith", email: "john@nassauconstruction.bs", company: "Nassau Construction Ltd", role: "Admin", status: "Active", lastLogin: "2024-01-15" },
-  { id: 2, name: "Maria Rodriguez", email: "maria@atlantisbuilders.bs", company: "Atlantis Builders", role: "Manager", status: "Active", lastLogin: "2024-01-14" },
-  { id: 3, name: "David Johnson", email: "david@paradiseprojects.bs", company: "Paradise Projects", role: "Worker", status: "Active", lastLogin: "2024-01-13" },
-  { id: 4, name: "Sarah Williams", email: "sarah@coralbayconstruction.bs", company: "Coral Bay Construction", role: "Manager", status: "Inactive", lastLogin: "2024-01-10" },
-  { id: 5, name: "Michael Brown", email: "michael@freeportbuilders.bs", company: "Freeport Builders", role: "Worker", status: "Active", lastLogin: "2024-01-15" },
-  { id: 6, name: "Lisa Davis", email: "lisa@exumaprojects.bs", company: "Exuma Projects", role: "Admin", status: "Active", lastLogin: "2024-01-14" },
-]
+/* eslint-disable no-undef, @typescript-eslint/no-explicit-any */
+async function getUserManagementData() {
+  const supabase = await createClient()
+  
+  // Get all profiles with company information from TropiTech
+  const { data: tropiTechUsers, error: usersError } = await supabase
+    .from('profiles')
+    .select(`
+      id,
+      full_name,
+      email,
+      role,
+      status,
+      last_login,
+      created_at,
+      company_id,
+      companies (
+        id,
+        name,
+        status
+      )
+    `)
+    .order('created_at', { ascending: false })
 
-export default function UserManagement() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [roleFilter, setRoleFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-
-  const filteredUsers = mockUsers.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.company.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = roleFilter === "all" || user.role.toLowerCase() === roleFilter
-    const matchesStatus = statusFilter === "all" || user.status.toLowerCase() === statusFilter
-    
-    return matchesSearch && matchesRole && matchesStatus
-  })
-
-  const getStatusBadge = (status: string) => {
-    return status === "Active" 
-      ? <Badge className="bg-success text-success-foreground">Active</Badge>
-      : <Badge variant="secondary">Inactive</Badge>
+  if (usersError) {
+    // Error fetching TropiTech users
   }
 
-  const getRoleBadge = (role: string) => {
-    const variants = {
-      Admin: "bg-primary text-primary-foreground",
-      Manager: "bg-accent text-accent-foreground", 
-      Worker: "bg-secondary text-secondary-foreground"
+  // Get users from TropiTrack (with error handling)
+  let tropiTrackUsers = null
+  // let tropiTrackError = null // Unused variable
+  
+  // Check if TropiTrack environment variables are available
+  const tropiTrackUrl = process.env.NEXT_PUBLIC_TROPITRACK_SUPABASE_URL
+  const tropiTrackAnonKey = process.env.NEXT_PUBLIC_TROPITRACK_SUPABASE_ANON_KEY
+  
+  if (tropiTrackUrl && tropiTrackAnonKey) {
+    try {
+      const result = await tropiTrackServerApi.getAllUsers()
+      tropiTrackUsers = result.data
+    } catch {
+      // Error fetching TropiTrack users
     }
-    return <Badge className={variants[role as keyof typeof variants]}>{role}</Badge>
   }
+
+  // Transform TropiTrack users to match the format
+  const transformedTropiTrackUsers = tropiTrackUsers ? tropiTrackUsers.map(user => ({
+    id: `tropitrack_${user.id}`,
+    full_name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'No Name',
+    email: user.email,
+    role: user.role || 'user',
+    status: user.is_active ? 'active' : 'inactive',
+    last_login: user.last_login_at || null,
+    created_at: user.created_at,
+    company_id: user.company_id,
+    companies: user.companies ? {
+      ...user.companies,
+      status: (user.companies as { state?: string, [key: string]: any }).state // Map state to status for consistency
+    } : null,
+    source: 'TropiTrack' as const
+  })) : []
+
+  // Transform TropiTech users to include source
+  const transformedTropiTechUsers = (tropiTechUsers || []).map(user => ({
+    ...user,
+    source: 'TropiTech' as const
+  }))
+
+  // Combine users from both sources
+  const allUsers = [...transformedTropiTechUsers, ...transformedTropiTrackUsers]
+
+  // Get statistics from TropiTech
+  const { count: tropiTechTotalUsers } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+
+  const { count: tropiTechActiveUsers } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'active')
+
+  const { count: tropiTechAdminUsers } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('role', 'admin')
+
+  // Get users created this month from TropiTech
+  const startOfMonth = new Date()
+  startOfMonth.setDate(1)
+  startOfMonth.setHours(0, 0, 0, 0)
+
+  const { count: tropiTechNewThisMonth } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', startOfMonth.toISOString())
+
+
+
+  // Calculate combined statistics
+  const tropiTrackTotalUsers = tropiTrackUsers ? tropiTrackUsers.length : 0
+  const tropiTrackActiveUsers = tropiTrackUsers ? tropiTrackUsers.filter(u => u.is_active).length : 0
+  const tropiTrackAdminUsers = tropiTrackUsers ? tropiTrackUsers.filter(u => u.role === 'admin').length : 0
+  const tropiTrackNewThisMonth = tropiTrackUsers ? tropiTrackUsers.filter(u => 
+    new Date(u.created_at) >= startOfMonth
+  ).length : 0
+
+  return {
+    users: allUsers,
+    stats: {
+      totalUsers: (tropiTechTotalUsers || 0) + tropiTrackTotalUsers,
+      activeUsers: (tropiTechActiveUsers || 0) + tropiTrackActiveUsers,
+      adminUsers: (tropiTechAdminUsers || 0) + tropiTrackAdminUsers,
+      newThisMonth: (tropiTechNewThisMonth || 0) + tropiTrackNewThisMonth
+    }
+  }
+}
+
+export default async function UserManagement() {
+  const { users, stats } = await getUserManagementData()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">User Management</h1>
+        <p className="text-muted-foreground mt-2">Manage users, roles, and permissions across all companies</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardDescription>Total Users</CardDescription>
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardDescription>Total Users</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1,247</div>
+            <div className="text-2xl font-bold text-foreground">{stats.totalUsers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardDescription>Active Users</CardDescription>
+            <div className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4 text-success" />
+              <CardDescription>Active Users</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">1,156</div>
+            <div className="text-2xl font-bold text-success">{stats.activeUsers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardDescription>Admins</CardDescription>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-primary" />
+              <CardDescription>Admins</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">89</div>
+            <div className="text-2xl font-bold text-primary">{stats.adminUsers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardDescription>New This Month</CardDescription>
+            <div className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4 text-muted-foreground" />
+              <CardDescription>New This Month</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">142</div>
+            <div className="text-2xl font-bold text-foreground">{stats.newThisMonth.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters and Search */}
-      <Card className="border-border">
-        <CardHeader>
-          <CardTitle>User Directory</CardTitle>
-          <CardDescription>Search and filter users by company, role, or status</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <Input
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="md:w-1/3"
-            />
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="md:w-40">
-                <SelectValue placeholder="Filter by role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="worker">Worker</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="md:w-40">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button className="md:ml-auto">Add New User</Button>
-          </div>
-
-          {/* Users Table */}
-          <div className="rounded-lg border border-border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last Login</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.company}</TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
-                    <TableCell>{user.lastLogin}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">View</Button>
-                        <Button variant="outline" size="sm">Edit</Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* User Management Client Component */}
+      <UserManagementClient users={users} />
     </div>
   )
 }

@@ -83,7 +83,7 @@ export default function BillingSubscriptions() {
     .reduce((sum, sub) => sum + parseInt(sub.amount.replace('$', '').replace(',', '')), 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Billing & Subscriptions</h1>
@@ -91,7 +91,7 @@ export default function BillingSubscriptions() {
       </div>
 
       {/* Revenue Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
             <CardDescription>Monthly Recurring Revenue</CardDescription>

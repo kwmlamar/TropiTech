@@ -111,7 +111,7 @@ export default function TropiBrain() {
   const averageImpact = Math.round(insights.reduce((sum, insight) => sum + insight.impact_score, 0) / insights.length)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
@@ -124,7 +124,7 @@ export default function TropiBrain() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
         <Card className="border-border">
           <CardHeader className="pb-2">
             <CardDescription>Total Insights</CardDescription>
@@ -245,7 +245,7 @@ export default function TropiBrain() {
       </Card>
 
       {/* Categories Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <Card className="border-border">
           <CardHeader>
             <CardTitle>Insights by Category</CardTitle>

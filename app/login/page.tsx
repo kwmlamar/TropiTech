@@ -30,9 +30,9 @@ export default function LoginPage() {
             <span className="mx-3 text-xs text-muted-foreground">or</span>
             <div className="flex-1 h-px bg-border" />
           </div>
-          <form>
+    <form>
             <Button type="submit" variant="outline" formAction={signup} className="w-full">Create an account</Button>
-          </form>
+    </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <Link href="/" className="text-xs text-muted-foreground hover:underline">Return to homepage</Link>
