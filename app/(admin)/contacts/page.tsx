@@ -3,7 +3,7 @@ import { Plus, Filter, Download } from "lucide-react"
 
 export default function ContactsPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="ml-4 text-3xl font-bold text-foreground">Contacts</h1>
@@ -12,11 +12,11 @@ export default function ContactsPage() {
       {/* Main Content */}
       <Card className="bg-white/30 backdrop-blur-sm">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Contact Management</CardTitle>
-              <CardDescription className="sr-only">View and manage all contacts and their information</CardDescription>
-            </div>
+                      <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold">Contact Management</CardTitle>
+                <CardDescription className="sr-only">View and manage all contacts and their information</CardDescription>
+              </div>
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
                 <Plus className="h-4 w-4 text-gray-600" />
@@ -31,12 +31,12 @@ export default function ContactsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Recent Contacts */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Recent Contacts</CardTitle>
-                <CardDescription>Latest contacts added to the system</CardDescription>
+                <CardTitle className="text-lg font-bold">Recent Contacts</CardTitle>
+                <CardDescription className="sr-only">Latest contacts added to the system</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
@@ -77,8 +77,8 @@ export default function ContactsPage() {
             {/* Contact Categories */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Contact Categories</CardTitle>
-                <CardDescription>Contacts by type and role</CardDescription>
+                <CardTitle className="text-lg font-bold">Contact Categories</CardTitle>
+                <CardDescription className="sr-only">Contacts by type and role</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -141,8 +141,8 @@ export default function ContactsPage() {
             {/* Contact Activity */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Contact Activity</CardTitle>
-                <CardDescription>Recent interactions and updates</CardDescription>
+                <CardTitle className="text-lg font-bold">Contact Activity</CardTitle>
+                <CardDescription className="sr-only">Recent interactions and updates</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50/70 border border-blue-200/50">
@@ -214,6 +214,58 @@ export default function ContactsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Additional Contact Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Contact Engagement</CardTitle>
+            <CardDescription className="sr-only">How often contacts interact with your business</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">High Engagement</span>
+              <span className="text-sm font-bold text-green-600">1,247</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Medium Engagement</span>
+              <span className="text-sm font-bold text-blue-600">856</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Low Engagement</span>
+              <span className="text-sm font-bold text-orange-600">432</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Inactive</span>
+              <span className="text-sm font-bold text-red-600">312</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Contact Growth</CardTitle>
+            <CardDescription className="sr-only">Monthly contact acquisition trends</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">This Month</span>
+              <span className="text-sm font-bold text-blue-600">+89</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Last Month</span>
+              <span className="text-sm font-bold text-green-600">+76</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Growth Rate</span>
+              <span className="text-sm font-bold text-purple-600">+15%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Target</span>
+              <span className="text-sm font-bold text-orange-600">+100</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 } 

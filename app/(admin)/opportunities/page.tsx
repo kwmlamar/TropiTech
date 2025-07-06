@@ -3,7 +3,7 @@ import { Plus, Filter, Download } from "lucide-react"
 
 export default function OpportunitiesPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="ml-4 text-3xl font-bold text-foreground">Opportunities</h1>
@@ -14,7 +14,7 @@ export default function OpportunitiesPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Opportunity Management</CardTitle>
+              <CardTitle className="text-lg font-bold">Opportunity Management</CardTitle>
               <CardDescription className="sr-only">View and manage all sales opportunities in your pipeline</CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -31,12 +31,12 @@ export default function OpportunitiesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Recent Opportunities */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Recent Opportunities</CardTitle>
-                <CardDescription>Latest opportunities added to pipeline</CardDescription>
+                <CardTitle className="text-lg font-bold">Recent Opportunities</CardTitle>
+                <CardDescription className="sr-only">Latest opportunities added to pipeline</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
@@ -77,8 +77,8 @@ export default function OpportunitiesPage() {
             {/* Sales Pipeline */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Sales Pipeline</CardTitle>
-                <CardDescription>Opportunities by stage and value</CardDescription>
+                <CardTitle className="text-lg font-bold">Sales Pipeline</CardTitle>
+                <CardDescription className="sr-only">Opportunities by stage and value</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -141,8 +141,8 @@ export default function OpportunitiesPage() {
             {/* Win Probability */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Win Probability</CardTitle>
-                <CardDescription>High-probability opportunities</CardDescription>
+                <CardTitle className="text-lg font-bold">Win Probability</CardTitle>
+                <CardDescription className="sr-only">High-probability opportunities</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-green-50/70 border border-green-200/50">
@@ -214,6 +214,58 @@ export default function OpportunitiesPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Additional Opportunity Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Opportunity Metrics</CardTitle>
+            <CardDescription className="sr-only">Key performance indicators for opportunities</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Win Rate</span>
+              <span className="text-sm font-bold text-green-600">34%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Avg Deal Size</span>
+              <span className="text-sm font-bold text-blue-600">$42K</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Sales Cycle</span>
+              <span className="text-sm font-bold text-purple-600">67 days</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Conversion Rate</span>
+              <span className="text-sm font-bold text-orange-600">28%</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Pipeline Growth</CardTitle>
+            <CardDescription className="sr-only">Opportunity pipeline performance trends</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">This Month</span>
+              <span className="text-sm font-bold text-blue-600">+23</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Pipeline Value</span>
+              <span className="text-sm font-bold text-green-600">$2.4M</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Growth Rate</span>
+              <span className="text-sm font-bold text-purple-600">+18%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Target</span>
+              <span className="text-sm font-bold text-orange-600">$3.0M</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 } 

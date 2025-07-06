@@ -3,7 +3,7 @@ import { Plus, Filter, Download } from "lucide-react"
 
 export default function LeadsPage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Header */}
         <div>
           <h1 className="ml-4 text-3xl font-bold text-foreground">Leads</h1>
@@ -15,7 +15,7 @@ export default function LeadsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Lead Management</CardTitle>
+              <CardTitle className="text-lg font-bold">Lead Management</CardTitle>
               <CardDescription className="sr-only">View and manage all leads in your pipeline</CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -32,7 +32,7 @@ export default function LeadsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Recent Leads */}
             <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
               <CardHeader>
@@ -217,6 +217,58 @@ export default function LeadsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Additional Lead Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Top Lead Sources</CardTitle>
+            <CardDescription className="sr-only">Where your best leads are coming from</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Website</span>
+              <span className="text-sm font-bold text-blue-600">42%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Referral</span>
+              <span className="text-sm font-bold text-green-600">28%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Social Media</span>
+              <span className="text-sm font-bold text-purple-600">18%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Events</span>
+              <span className="text-sm font-bold text-orange-600">12%</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Lead Response Time</CardTitle>
+            <CardDescription className="sr-only">How quickly your team responds to new leads</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Average Response</span>
+              <span className="text-sm font-bold text-blue-600">2.3 hrs</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Fastest</span>
+              <span className="text-sm font-bold text-green-600">12 min</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">Slowest</span>
+              <span className="text-sm font-bold text-red-600">8 hrs</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+              <span className="font-medium text-gray-800">This Month</span>
+              <span className="text-sm font-bold text-purple-600">1.9 hrs</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 } 
