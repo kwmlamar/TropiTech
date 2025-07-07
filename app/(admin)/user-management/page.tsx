@@ -13,7 +13,7 @@ declare global {
   };
 }
 
-/* eslint-disable no-undef, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 async function getUserManagementData() {
   const supabase = await createClient()
   

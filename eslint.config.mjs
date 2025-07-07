@@ -19,6 +19,7 @@ export default [
       globals: {
         React: "writable",
         JSX: "writable",
+        process: "readonly",
         HTMLDivElement: "readonly",
         HTMLButtonElement: "readonly",
         HTMLInputElement: "readonly",

@@ -47,7 +47,10 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
       <header className="h-16 flex items-center justify-between px-6 relative z-10">
         <div className="flex items-center gap-3">
           
-          <h1 className="text-xl font-bold text-foreground">TropiTech</h1>
+          <h1 className="text-xl text-foreground">
+          <span className="font-bold">Tropi</span>
+          <span className="font-normal">Tech</span>
+        </h1>
         </div>
 
         <div className="flex items-center gap-6">

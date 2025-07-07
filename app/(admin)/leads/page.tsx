@@ -1,17 +1,113 @@
+'use client'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
+import { useLeads } from "@/hooks/use-crm"
+import { useMemo } from "react"
 
 export default function LeadsPage() {
+  const { leads, loading, error } = useLeads()
+
+  // Calculate metrics from real data
+  const metrics = useMemo(() => {
+    if (!leads.length) return {
+      totalLeads: 0,
+      appInterested: 0,
+      demoScheduled: 0,
+      trialActive: 0,
+      appConverted: 0,
+      trialsStarted: 0,
+      conversions: 0,
+      conversionRate: 0
+    }
+
+    const appInterested = leads.filter(lead => lead.stage === 'interested').length
+    const demoScheduled = leads.filter(lead => lead.stage === 'demo_scheduled').length
+    const trialActive = leads.filter(lead => lead.stage === 'trial_active').length
+    const appConverted = leads.filter(lead => lead.stage === 'converted').length
+    const trialsStarted = leads.filter(lead => lead.has_trial === true).length
+    const conversions = appConverted
+    const conversionRate = leads.length > 0 ? Math.round((conversions / leads.length) * 100) : 0
+
+    return {
+      totalLeads: leads.length,
+      appInterested,
+      demoScheduled,
+      trialActive,
+      appConverted,
+      trialsStarted,
+      conversions,
+      conversionRate
+    }
+  }, [leads])
+
+  // Get recent leads for display
+  const recentLeads = useMemo(() => {
+    return leads.slice(0, 3).map(lead => ({
+      company: lead.company_name,
+      description: lead.description || 'No description provided',
+      value: lead.estimated_value || 0,
+      timeAgo: getTimeAgo(lead.created_at)
+    }))
+  }, [leads])
+
+  // Get trial users
+  const trialUsers = useMemo(() => {
+    return leads
+      .filter(lead => lead.has_trial === true)
+      .slice(0, 3)
+      .map(lead => ({
+        company: lead.company_name,
+        status: getTrialStatus(lead.trial_end_date),
+        description: getTrialDescription(lead.trial_end_date)
+      }))
+  }, [leads])
+
+  if (loading) {
+    return (
+      <div className="space-y-2">
+        <div>
+          <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
+        </div>
+        <Card className="bg-white/40 backdrop-blur-sm">
+          <CardContent className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading leads...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <div>
+          <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
+        </div>
+        <Card className="bg-white/40 backdrop-blur-sm">
+          <CardContent className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <p className="text-red-600 mb-2">Error loading leads</p>
+              <p className="text-gray-600 text-sm">{error}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-2">
       {/* Header */}
-        <div>
-          <h1 className="ml-4 text-3xl font-bold text-foreground">Leads</h1>
-          </div>
-
+      <div>
+        <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
+      </div>
 
       {/* Main Content */}
-      <Card className="bg-white/30 backdrop-blur-sm">
+      <Card className="bg-white/40 backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -33,242 +129,302 @@ export default function LeadsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-            {/* Recent Leads */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Recent Leads</CardTitle>
-                <CardDescription>Latest leads added to the system</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">John Doe</p>
-                    <p className="text-sm text-gray-600">Construction Manager</p>
+            {/* App Leads */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                {recentLeads.length > 0 ? (
+                  recentLeads.map((lead, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                      <div>
+                        <p className="font-medium text-gray-800">{lead.company}</p>
+                        <p className="text-sm text-gray-600">{lead.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-800">${lead.value}/mo</p>
+                        <p className="text-xs text-gray-500">{lead.timeAgo}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500 text-sm">No leads yet</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">$25,000</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">Sarah Miller</p>
-                    <p className="text-sm text-gray-600">Project Director</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">$45,000</p>
-                    <p className="text-xs text-gray-500">1 day ago</p>
-                  </div>
-                </div>
+                )}
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">App Leads</h3>
+            </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">Robert Johnson</p>
-                    <p className="text-sm text-gray-600">Site Supervisor</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">$18,000</p>
-                    <p className="text-xs text-gray-500">2 days ago</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Lead Pipeline */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Lead Pipeline</CardTitle>
-                <CardDescription>Leads by stage in your sales funnel</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
+            {/* App Adoption */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">New</span>
+                    <span className="text-sm font-medium text-gray-700">App Interested</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">12</span>
-                    <span className="text-xs text-gray-500">leads</span>
+                    <span className="text-sm font-bold text-gray-800">{metrics.appInterested}</span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Qualified</span>
+                    <span className="text-sm font-medium text-gray-700">Demo Scheduled</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">8</span>
-                    <span className="text-xs text-gray-500">leads</span>
+                    <span className="text-sm font-bold text-gray-800">{metrics.demoScheduled}</span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Proposal</span>
+                    <span className="text-sm font-medium text-gray-700">Trial Active</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">5</span>
-                    <span className="text-xs text-gray-500">leads</span>
+                    <span className="text-sm font-bold text-gray-800">{metrics.trialActive}</span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Negotiation</span>
+                    <span className="text-sm font-medium text-gray-700">App Converted</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">3</span>
-                    <span className="text-xs text-gray-500">leads</span>
+                    <span className="text-sm font-bold text-gray-800">{metrics.appConverted}</span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">App Adoption</h3>
+            </div>
 
-                <div className="flex items-center justify-between">
+            {/* Trial Users */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                {trialUsers.length > 0 ? (
+                  trialUsers.map((trial, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                      <div>
+                        <p className="font-medium text-gray-800">{trial.company}</p>
+                        <p className="text-sm text-gray-600">{trial.description}</p>
+                      </div>
+                      <span className={`text-xs font-medium ${getStatusColor(trial.status)}`}>{trial.status}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500 text-sm">No trial users</p>
+                  </div>
+                )}
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">Trial Users</h3>
+            </div>
+
+            {/* Lead Metrics */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Closed Lost</span>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">App Leads</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">2</span>
-                    <span className="text-xs text-gray-500">leads</span>
+                    <span className="text-sm font-bold text-blue-600">{metrics.totalLeads}</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-
-
-            {/* Follow-up Reminders */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800">Follow-up Reminders</CardTitle>
-                <CardDescription>Leads requiring attention</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50/70 border border-yellow-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">Mike Wilson</p>
-                    <p className="text-sm text-gray-600">Follow up on proposal</p>
-                  </div>
-                  <span className="text-xs text-yellow-600 font-medium">Today</span>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50/70 border border-orange-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">Lisa Chen</p>
-                    <p className="text-sm text-gray-600">Schedule demo call</p>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Trials Started</span>
                   </div>
-                  <span className="text-xs text-orange-600 font-medium">Tomorrow</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-green-600">{metrics.trialsStarted}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50/70 border border-blue-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">David Brown</p>
-                    <p className="text-sm text-gray-600">Send pricing quote</p>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">App Conversions</span>
                   </div>
-                  <span className="text-xs text-blue-600 font-medium">In 2 days</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-orange-600">{metrics.conversions}</span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Quick Stats Grid */}
-            <Card className="bg-transparent border border-white/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800 sr-only">Quick Stats</CardTitle>
-                <CardDescription className="sr-only">Key lead metrics at a glance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 grid-rows-3 gap-1 h-40">
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-blue-600">24</div>
-                    <div className="text-xs text-gray-600">New Leads</div>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Conversion Rate</span>
                   </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-green-600">$156K</div>
-                    <div className="text-xs text-gray-600">Pipeline Value</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-orange-600">8</div>
-                    <div className="text-xs text-gray-600">Follow-ups</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-purple-600">67%</div>
-                    <div className="text-xs text-gray-600">Conversion</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-red-600">3</div>
-                    <div className="text-xs text-gray-600">Overdue</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-indigo-600">12</div>
-                    <div className="text-xs text-gray-600">Meetings</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-purple-600">{metrics.conversionRate}%</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">Lead Metrics</h3>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Additional Lead Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+        <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Top Lead Sources</CardTitle>
             <CardDescription className="sr-only">Where your best leads are coming from</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Website</span>
-              <span className="text-sm font-bold text-blue-600">42%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Referral</span>
-              <span className="text-sm font-bold text-green-600">28%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Social Media</span>
-              <span className="text-sm font-bold text-purple-600">18%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Events</span>
-              <span className="text-sm font-bold text-orange-600">12%</span>
+          <CardContent className="p-6">
+            {/* Horizontal Bar Chart */}
+            <div className="space-y-4">
+              {/* Website - 42% */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Website</span>
+                  <span className="text-sm font-bold text-blue-600">42%</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-3">
+                  <div className="bg-blue-500 h-3 rounded-full" style={{ width: '42%' }}></div>
+                </div>
+              </div>
+              
+              {/* Referral - 28% */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Referral</span>
+                  <span className="text-sm font-bold text-green-600">28%</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-3">
+                  <div className="bg-green-500 h-3 rounded-full" style={{ width: '28%' }}></div>
+                </div>
+              </div>
+              
+              {/* Social Media - 18% */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Social Media</span>
+                  <span className="text-sm font-bold text-purple-600">18%</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-3">
+                  <div className="bg-purple-500 h-3 rounded-full" style={{ width: '18%' }}></div>
+                </div>
+              </div>
+              
+              {/* Events - 12% */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Events</span>
+                  <span className="text-sm font-bold text-orange-600">12%</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-3">
+                  <div className="bg-orange-500 h-3 rounded-full" style={{ width: '12%' }}></div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+        <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Lead Response Time</CardTitle>
             <CardDescription className="sr-only">How quickly your team responds to new leads</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Average Response</span>
-              <span className="text-sm font-bold text-blue-600">2.3 hrs</span>
+          <CardContent className="p-6">
+            {/* Gauge Chart */}
+            <div className="relative w-32 h-32 mx-auto mb-4">
+              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                {/* Background circle */}
+                <circle cx="18" cy="18" r="16" fill="none" className="stroke-white/30" strokeWidth="3"></circle>
+                {/* Progress circle - 2.3 hrs out of 4 hr target = 57.5% */}
+                <circle cx="18" cy="18" r="16" fill="none" className="stroke-green-500" strokeWidth="3" strokeDasharray="100 100" strokeDashoffset="42.5" strokeLinecap="round"></circle>
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-gray-800">2.3</div>
+                  <div className="text-xs text-gray-600">hours</div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Fastest</span>
-              <span className="text-sm font-bold text-green-600">12 min</span>
+            
+            {/* Target indicator */}
+            <div className="text-center mb-4">
+              <div className="text-sm text-gray-600">Target: 4 hours</div>
+              <div className="text-xs text-green-600 font-medium">Good performance</div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Slowest</span>
-              <span className="text-sm font-bold text-red-600">8 hrs</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">This Month</span>
-              <span className="text-sm font-bold text-purple-600">1.9 hrs</span>
+            
+            {/* Additional metrics */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center p-2 rounded-lg bg-white/50">
+                <div className="text-sm font-bold text-green-600">12 min</div>
+                <div className="text-xs text-gray-600">Fastest</div>
+              </div>
+              <div className="text-center p-2 rounded-lg bg-white/50">
+                <div className="text-sm font-bold text-red-600">8 hrs</div>
+                <div className="text-xs text-gray-600">Slowest</div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
   )
+}
+
+// Helper functions
+function getTimeAgo(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+  
+  if (diffInHours < 1) return 'Just now'
+  if (diffInHours < 24) return `${diffInHours} hours ago`
+  if (diffInHours < 48) return '1 day ago'
+  return `${Math.floor(diffInHours / 24)} days ago`
+}
+
+function getTrialStatus(trialEndDate: string | null): string {
+  if (!trialEndDate) return 'Unknown'
+  
+  const endDate = new Date(trialEndDate)
+  const now = new Date()
+  const diffInDays = Math.floor((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  
+  if (diffInDays < 0) return 'Expired'
+  if (diffInDays <= 1) return 'Expiring'
+  if (diffInDays <= 7) return 'Active'
+  return 'New'
+}
+
+function getTrialDescription(trialEndDate: string | null): string {
+  if (!trialEndDate) return 'No trial data'
+  
+  const endDate = new Date(trialEndDate)
+  const now = new Date()
+  const diffInDays = Math.floor((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  
+  if (diffInDays < 0) return 'Trial expired'
+  if (diffInDays <= 1) return `Trial ends in ${diffInDays} day`
+  if (diffInDays <= 7) return `Trial ends in ${diffInDays} days`
+  return 'Trial active'
+}
+
+function getStatusColor(status: string): string {
+  switch (status) {
+    case 'Active':
+    case 'New':
+      return 'text-green-600'
+    case 'Expiring':
+      return 'text-yellow-600'
+    case 'Expired':
+      return 'text-red-600'
+    default:
+      return 'text-gray-600'
+  }
 } 

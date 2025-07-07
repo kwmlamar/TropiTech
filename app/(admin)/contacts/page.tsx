@@ -1,22 +1,101 @@
+'use client'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
+import { useContacts, useCompanies } from "@/hooks/use-crm"
+import { useEffect, useState } from "react"
 
 export default function ContactsPage() {
+  const { contacts, loading: contactsLoading, error: contactsError } = useContacts()
+  const { companies, loading: companiesLoading } = useCompanies()
+  const [contactStats, setContactStats] = useState({
+    totalContacts: 0,
+    activeUsers: 0,
+    trialing: 0,
+    satisfaction: 0
+  })
+
+  useEffect(() => {
+    if (contacts && companies) {
+      // Calculate contact statistics
+      const totalContacts = contacts.length
+      const activeUsers = contacts.filter(c => c.status === 'active').length
+      const trialing = contacts.filter(c => c.status === 'trialing').length
+      const satisfaction = Math.round((activeUsers / totalContacts) * 100) || 0
+
+      setContactStats({
+        totalContacts,
+        activeUsers,
+        trialing,
+        satisfaction
+      })
+    }
+  }, [contacts, companies])
+
+  // Get recent contacts for display
+  const recentContacts = contacts?.slice(0, 3) || []
+  
+  // Get company statistics (for future use)
+  // const companyStats = companies?.reduce((acc, company) => {
+  //   const status = company.status || 'active'
+  //   acc[status] = (acc[status] || 0) + 1
+  //   return acc
+  // }, {} as Record<string, number>) || {}
+
+  if (contactsLoading || companiesLoading) {
+    return (
+      <div className="space-y-2">
+        <div>
+          <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
+        </div>
+        <Card className="bg-white/40 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-80 bg-gray-200 rounded-[32px]"></div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (contactsError) {
+    return (
+      <div className="space-y-2">
+        <div>
+          <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
+        </div>
+        <Card className="bg-white/40 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="text-center text-red-600">
+              Error loading contacts: {contactsError}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-2">
       {/* Header */}
-      <div>
-        <h1 className="ml-4 text-3xl font-bold text-foreground">Contacts</h1>
+        <div>
+        <h1 className="ml-4 text-3xl font-bold text-foreground">Customer Journeys</h1>
       </div>
 
       {/* Main Content */}
-      <Card className="bg-white/30 backdrop-blur-sm">
+      <Card className="bg-white/40 backdrop-blur-sm">
         <CardHeader>
-                      <div className="flex items-center justify-between">
-              <div>
+          <div className="flex items-center justify-between">
+            <div>
                 <CardTitle className="text-lg font-bold">Contact Management</CardTitle>
                 <CardDescription className="sr-only">View and manage all contacts and their information</CardDescription>
-              </div>
+            </div>
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
                 <Plus className="h-4 w-4 text-gray-600" />
@@ -32,216 +111,216 @@ export default function ContactsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-            {/* Recent Contacts */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Recent Contacts</CardTitle>
-                <CardDescription className="sr-only">Latest contacts added to the system</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">John Smith</p>
-                    <p className="text-sm text-gray-600">Project Manager</p>
+            {/* App Decision Makers */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                {recentContacts.map((contact, index) => (
+                  <div key={contact.id || index} className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                    <div>
+                      <p className="font-medium text-gray-800">{contact.first_name} {contact.last_name}</p>
+                      <p className="text-sm text-gray-600">{contact.title || 'Contact'}, {contact.company_name || 'Company'}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-800">{contact.status || 'Active'}</p>
+                      <p className="text-xs text-gray-500">
+                        {contact.created_at ? new Date(contact.created_at).toLocaleDateString() : 'Recently'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">ABC Construction</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
+                ))}
+                {recentContacts.length === 0 && (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No contacts found
                   </div>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">Sarah Johnson</p>
-                    <p className="text-sm text-gray-600">Site Supervisor</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">XYZ Builders</p>
-                    <p className="text-xs text-gray-500">1 day ago</p>
-                  </div>
-                </div>
+                )}
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">App Decision Makers</h3>
+            </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 hover:bg-white/70 transition-colors">
-                  <div>
-                    <p className="font-medium text-gray-800">Mike Davis</p>
-                    <p className="text-sm text-gray-600">Contractor</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-800">BuildRight Inc</p>
-                    <p className="text-xs text-gray-500">2 days ago</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contact Categories */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Contact Categories</CardTitle>
-                <CardDescription className="sr-only">Contacts by type and role</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
+            {/* App Prospects */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Clients</span>
+                    <span className="text-sm font-medium text-gray-700">Interested</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">1,247</span>
-                    <span className="text-xs text-gray-500">contacts</span>
+                    <span className="text-sm font-bold text-gray-800">
+                      {contacts?.filter(c => c.status === 'interested').length || 0}
+                    </span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Vendors</span>
+                    <span className="text-sm font-medium text-gray-700">Trialing</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">456</span>
-                    <span className="text-xs text-gray-500">contacts</span>
+                    <span className="text-sm font-bold text-gray-800">
+                      {contacts?.filter(c => c.status === 'trialing').length || 0}
+                    </span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Contractors</span>
+                    <span className="text-sm font-medium text-gray-700">Active Users</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">234</span>
-                    <span className="text-xs text-gray-500">contacts</span>
+                    <span className="text-sm font-bold text-gray-800">
+                      {contacts?.filter(c => c.status === 'active').length || 0}
+                    </span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Suppliers</span>
+                    <span className="text-sm font-medium text-gray-700">Expanded</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">189</span>
-                    <span className="text-xs text-gray-500">contacts</span>
+                    <span className="text-sm font-bold text-gray-800">
+                      {contacts?.filter(c => c.status === 'expanded').length || 0}
+                    </span>
+                    <span className="text-xs text-gray-500">companies</span>
                   </div>
                 </div>
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">App Prospects</h3>
+            </div>
 
-                <div className="flex items-center justify-between">
+            {/* User Teams */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                {companies?.slice(0, 3).map((company, index) => (
+                  <div key={company.id || index} className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                    <div>
+                      <p className="font-medium text-gray-800">{company.name}</p>
+                      <p className="text-sm text-gray-600">
+                        {company.employee_count || 'Unknown'} users, {company.industry || 'Industry'}
+                      </p>
+                    </div>
+                    <span className="text-xs text-blue-600 font-medium">{company.status || 'Active'}</span>
+                  </div>
+                ))}
+                {(!companies || companies.length === 0) && (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No companies found
+                  </div>
+                )}
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">User Teams</h3>
+            </div>
+
+            {/* Contact Metrics */}
+            <div>
+              <div className="flex flex-col space-y-3 p-3 rounded-[32px] bg-white/60 h-80 overflow-hidden">
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700">Inactive</span>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Total Contacts</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">89</span>
-                    <span className="text-xs text-gray-500">contacts</span>
+                    <span className="text-sm font-bold text-blue-600">{contactStats.totalContacts}</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contact Activity */}
-            <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Contact Activity</CardTitle>
-                <CardDescription className="sr-only">Recent interactions and updates</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50/70 border border-blue-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">Email sent</p>
-                    <p className="text-sm text-gray-600">Project proposal to ABC Construction</p>
-                  </div>
-                  <span className="text-xs text-blue-600 font-medium">Today</span>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-green-50/70 border border-green-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">Meeting scheduled</p>
-                    <p className="text-sm text-gray-600">Site visit with XYZ Builders</p>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Active Users</span>
                   </div>
-                  <span className="text-xs text-green-600 font-medium">Tomorrow</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-green-600">{contactStats.activeUsers}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50/70 border border-orange-200/50">
-                  <div>
-                    <p className="font-medium text-gray-800">Contract signed</p>
-                    <p className="text-sm text-gray-600">New agreement with BuildRight Inc</p>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Trialing</span>
                   </div>
-                  <span className="text-xs text-orange-600 font-medium">2 days ago</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-orange-600">{contactStats.trialing}</span>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Quick Stats Grid */}
-            <Card className="bg-transparent border border-white/50">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium text-gray-800 sr-only">Quick Stats</CardTitle>
-                <CardDescription className="sr-only">Key contact metrics at a glance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 grid-rows-3 gap-1 h-40">
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-blue-600">2,847</div>
-                    <div className="text-xs text-gray-600">Total Contacts</div>
+                <div className="flex items-center justify-between p-3 rounded-[32px] bg-transparent hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-700">Satisfaction</span>
                   </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-green-600">2,134</div>
-                    <div className="text-xs text-gray-600">Active</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-orange-600">456</div>
-                    <div className="text-xs text-gray-600">Companies</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-purple-600">89</div>
-                    <div className="text-xs text-gray-600">This Week</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-red-600">15%</div>
-                    <div className="text-xs text-gray-600">Growth</div>
-                  </div>
-                  
-                  <div className="bg-white/50 rounded-lg p-2 text-center flex flex-col justify-center">
-                    <div className="text-sm font-bold text-indigo-600">75%</div>
-                    <div className="text-xs text-gray-600">Engagement</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-purple-600">{contactStats.satisfaction}%</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <h3 className="text-center text-sm font-medium text-gray-700 mt-2">Contact Metrics</h3>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Additional Contact Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+        <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Contact Engagement</CardTitle>
             <CardDescription className="sr-only">How often contacts interact with your business</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">High Engagement</span>
-              <span className="text-sm font-bold text-green-600">1,247</span>
+          <CardContent className="space-y-4">
+            {/* High Engagement */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">High Engagement</span>
+                <span className="text-sm font-bold text-green-600">1,247</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3">
+                <div className="bg-green-500 h-3 rounded-full" style={{ width: '45%' }}></div>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Medium Engagement</span>
-              <span className="text-sm font-bold text-blue-600">856</span>
+
+            {/* Medium Engagement */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Medium Engagement</span>
+                <span className="text-sm font-bold text-blue-600">856</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3">
+                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '31%' }}></div>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Low Engagement</span>
-              <span className="text-sm font-bold text-orange-600">432</span>
+
+            {/* Low Engagement */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Low Engagement</span>
+                <span className="text-sm font-bold text-orange-600">432</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3">
+                <div className="bg-orange-500 h-3 rounded-full" style={{ width: '16%' }}></div>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Inactive</span>
-              <span className="text-sm font-bold text-red-600">312</span>
+
+            {/* Inactive */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Inactive</span>
+                <span className="text-sm font-bold text-red-600">312</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3">
+                <div className="bg-red-500 h-3 rounded-full" style={{ width: '11%' }}></div>
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-white/60 backdrop-blur-sm border border-gray-200/50">
+        <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Contact Growth</CardTitle>
             <CardDescription className="sr-only">Monthly contact acquisition trends</CardDescription>
