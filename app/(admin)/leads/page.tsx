@@ -2,11 +2,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
-import { useLeads } from "@/hooks/use-crm"
+import { useLeads, useLeadSources, useLeadResponseTime } from "@/hooks/use-crm"
 import { useMemo } from "react"
 
 export default function LeadsPage() {
   const { leads, loading, error } = useLeads()
+  const { leadSources, loading: sourcesLoading, error: sourcesError } = useLeadSources()
+  const { responseTimeData, loading: responseLoading, error: responseError } = useLeadResponseTime()
 
   // Calculate metrics from real data
   const metrics = useMemo(() => {
@@ -44,10 +46,10 @@ export default function LeadsPage() {
   // Get recent leads for display
   const recentLeads = useMemo(() => {
     return leads.slice(0, 3).map(lead => ({
-      company: lead.company_name,
+      company: lead.company_name || 'Unknown Company',
       description: lead.description || 'No description provided',
       value: lead.estimated_value || 0,
-      timeAgo: getTimeAgo(lead.created_at)
+      timeAgo: getTimeAgo(lead.created_at || '')
     }))
   }, [leads])
 
@@ -57,9 +59,9 @@ export default function LeadsPage() {
       .filter(lead => lead.has_trial === true)
       .slice(0, 3)
       .map(lead => ({
-        company: lead.company_name,
-        status: getTrialStatus(lead.trial_end_date),
-        description: getTrialDescription(lead.trial_end_date)
+        company: lead.company_name || 'Unknown Company',
+        status: getTrialStatus(lead.trial_end_date || null),
+        description: getTrialDescription(lead.trial_end_date || null)
       }))
   }, [leads])
 
@@ -283,52 +285,47 @@ export default function LeadsPage() {
             <CardDescription className="sr-only">Where your best leads are coming from</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Horizontal Bar Chart */}
-            <div className="space-y-4">
-              {/* Website - 42% */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Website</span>
-                  <span className="text-sm font-bold text-blue-600">42%</span>
-                </div>
-                <div className="w-full bg-white/30 rounded-full h-3">
-                  <div className="bg-blue-500 h-3 rounded-full" style={{ width: '42%' }}></div>
-                </div>
+            {sourcesLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
               </div>
-              
-              {/* Referral - 28% */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Referral</span>
-                  <span className="text-sm font-bold text-green-600">28%</span>
-                </div>
-                <div className="w-full bg-white/30 rounded-full h-3">
-                  <div className="bg-green-500 h-3 rounded-full" style={{ width: '28%' }}></div>
-                </div>
+            ) : sourcesError ? (
+              <div className="text-center text-red-600 text-sm">
+                Error loading lead sources
               </div>
-              
-              {/* Social Media - 18% */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Social Media</span>
-                  <span className="text-sm font-bold text-purple-600">18%</span>
-                </div>
-                <div className="w-full bg-white/30 rounded-full h-3">
-                  <div className="bg-purple-500 h-3 rounded-full" style={{ width: '18%' }}></div>
-                </div>
+            ) : leadSources.length > 0 ? (
+              <div className="space-y-4">
+                {leadSources.slice(0, 4).map((source, index) => {
+                  const colors = ['blue', 'green', 'purple', 'orange', 'red', 'yellow']
+                  const color = colors[index % colors.length]
+                  const colorClass = `text-${color}-600`
+                  const bgColorClass = `bg-${color}-500`
+                  
+                  return (
+                    <div key={source.source}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700 capitalize">
+                          {source.source.replace('_', ' ')}
+                        </span>
+                        <span className={`text-sm font-bold ${colorClass}`}>
+                          {source.percentage}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-white/30 rounded-full h-3">
+                        <div 
+                          className={`${bgColorClass} h-3 rounded-full`} 
+                          style={{ width: `${source.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-              
-              {/* Events - 12% */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Events</span>
-                  <span className="text-sm font-bold text-orange-600">12%</span>
-                </div>
-                <div className="w-full bg-white/30 rounded-full h-3">
-                  <div className="bg-orange-500 h-3 rounded-full" style={{ width: '12%' }}></div>
-                </div>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">
+                No lead sources data available
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
         <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
@@ -337,39 +334,77 @@ export default function LeadsPage() {
             <CardDescription className="sr-only">How quickly your team responds to new leads</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Gauge Chart */}
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                {/* Background circle */}
-                <circle cx="18" cy="18" r="16" fill="none" className="stroke-white/30" strokeWidth="3"></circle>
-                {/* Progress circle - 2.3 hrs out of 4 hr target = 57.5% */}
-                <circle cx="18" cy="18" r="16" fill="none" className="stroke-green-500" strokeWidth="3" strokeDasharray="100 100" strokeDashoffset="42.5" strokeLinecap="round"></circle>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-gray-800">2.3</div>
-                  <div className="text-xs text-gray-600">hours</div>
+            {responseLoading ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              </div>
+            ) : responseError ? (
+              <div className="text-center text-red-600 text-sm">
+                Error loading response time data
+              </div>
+            ) : responseTimeData ? (
+              <>
+                {/* Gauge Chart */}
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                    {/* Background circle */}
+                    <circle cx="18" cy="18" r="16" fill="none" className="stroke-white/30" strokeWidth="3"></circle>
+                    {/* Progress circle */}
+                    <circle 
+                      cx="18" 
+                      cy="18" 
+                      r="16" 
+                      fill="none" 
+                      className={`${responseTimeData.responseTimePercentage <= 100 ? 'stroke-green-500' : 'stroke-red-500'}`} 
+                      strokeWidth="3" 
+                      strokeDasharray="100 100" 
+                      strokeDashoffset={Math.max(0, 100 - responseTimeData.responseTimePercentage)} 
+                      strokeLinecap="round"
+                    ></circle>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-gray-800">
+                        {Math.round(responseTimeData.averageResponseTime / 60 * 10) / 10}
+                      </div>
+                      <div className="text-xs text-gray-600">hours</div>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Target indicator */}
+                <div className="text-center mb-4">
+                  <div className="text-sm text-gray-600">
+                    Target: {Math.round(responseTimeData.targetResponseTime / 60)} hours
+                  </div>
+                  <div className={`text-xs font-medium ${
+                    responseTimeData.responseTimePercentage <= 100 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {responseTimeData.responseTimePercentage <= 100 ? 'Good performance' : 'Needs improvement'}
+                  </div>
+                </div>
+                
+                {/* Additional metrics */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-2 rounded-lg bg-white/50">
+                    <div className="text-sm font-bold text-green-600">
+                      {Math.round(responseTimeData.fastestResponse / 60 * 10) / 10} hrs
+                    </div>
+                    <div className="text-xs text-gray-600">Fastest</div>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-white/50">
+                    <div className="text-sm font-bold text-red-600">
+                      {Math.round(responseTimeData.slowestResponse / 60 * 10) / 10} hrs
+                    </div>
+                    <div className="text-xs text-gray-600">Slowest</div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">
+                No response time data available
               </div>
-            </div>
-            
-            {/* Target indicator */}
-            <div className="text-center mb-4">
-              <div className="text-sm text-gray-600">Target: 4 hours</div>
-              <div className="text-xs text-green-600 font-medium">Good performance</div>
-            </div>
-            
-            {/* Additional metrics */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="text-center p-2 rounded-lg bg-white/50">
-                <div className="text-sm font-bold text-green-600">12 min</div>
-                <div className="text-xs text-gray-600">Fastest</div>
-              </div>
-              <div className="text-center p-2 rounded-lg bg-white/50">
-                <div className="text-sm font-bold text-red-600">8 hrs</div>
-                <div className="text-xs text-gray-600">Slowest</div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,11 +1,17 @@
-import { login, signup } from './actions'
+import { login } from './actions'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; message?: string }>
+}) {
+  const params = await searchParams
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <Card className="w-full max-w-md shadow-elevated">
@@ -14,6 +20,13 @@ export default function LoginPage() {
           <CardDescription>Enter your email and password to access your account.</CardDescription>
         </CardHeader>
         <CardContent>
+          {params.message === 'email-confirmed' && (
+            <Alert variant="success" className="mb-4">
+              <AlertDescription>
+                Your email has been confirmed! You can now sign in to your account.
+              </AlertDescription>
+            </Alert>
+          )}
           <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -30,9 +43,11 @@ export default function LoginPage() {
             <span className="mx-3 text-xs text-muted-foreground">or</span>
             <div className="flex-1 h-px bg-border" />
           </div>
-    <form>
-            <Button type="submit" variant="outline" formAction={signup} className="w-full">Create an account</Button>
-    </form>
+          <div className="text-center">
+            <Link href="/signup" className="text-sm text-muted-foreground hover:underline">
+              Don't have an account? Sign up
+            </Link>
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <Link href="/" className="text-xs text-muted-foreground hover:underline">Return to homepage</Link>

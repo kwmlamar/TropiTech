@@ -2,12 +2,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
-import { useOpportunities, useCompanies } from "@/hooks/use-crm"
+import { useOpportunities, useCompanies, useOpportunityMetrics, usePipelineGrowth } from "@/hooks/use-crm"
 import { useEffect, useState } from "react"
 
 export default function OpportunitiesPage() {
   const { opportunities, loading: opportunitiesLoading, error: opportunitiesError } = useOpportunities()
   const { companies, loading: companiesLoading } = useCompanies()
+  const { metrics, loading: metricsLoading, error: metricsError } = useOpportunityMetrics()
+  const { growth, loading: growthLoading, error: growthError } = usePipelineGrowth()
   const [opportunityStats, setOpportunityStats] = useState({
     pipelineValue: 0,
     activeUsers: 0,
@@ -279,79 +281,102 @@ export default function OpportunitiesPage() {
 
       {/* Additional Opportunity Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {/* Opportunity Metrics Card (detailed) */}
         <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Opportunity Metrics</CardTitle>
             <CardDescription className="sr-only">Key performance indicators for opportunities</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Win Rate */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Win Rate</span>
-                <span className="text-sm font-bold text-green-600">34%</span>
+            {metricsLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
               </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-green-500 h-3 rounded-full" style={{ width: '34%' }}></div>
-              </div>
-            </div>
-
-            {/* Avg Deal Size */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Avg Deal Size</span>
-                <span className="text-sm font-bold text-blue-600">$42K</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '42%' }}></div>
-              </div>
-            </div>
-
-            {/* Sales Cycle */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Sales Cycle</span>
-                <span className="text-sm font-bold text-purple-600">67 days</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-purple-500 h-3 rounded-full" style={{ width: '67%' }}></div>
-              </div>
-            </div>
-
-            {/* Conversion Rate */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Conversion Rate</span>
-                <span className="text-sm font-bold text-orange-600">28%</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-orange-500 h-3 rounded-full" style={{ width: '28%' }}></div>
-              </div>
-            </div>
+            ) : metricsError ? (
+              <div className="text-center text-red-600 text-sm">Error loading metrics</div>
+            ) : metrics ? (
+              <>
+                {/* Win Rate */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Win Rate</span>
+                    <span className="text-sm font-bold text-green-600">{metrics.winRate}%</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-green-500 h-3 rounded-full" style={{ width: `${metrics.winRate}%` }}></div>
+                  </div>
+                </div>
+                {/* Avg Deal Size */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Avg Deal Size</span>
+                    <span className="text-sm font-bold text-blue-600">${metrics.avgDealSize}K</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${metrics.avgDealSize}%` }}></div>
+                  </div>
+                </div>
+                {/* Sales Cycle */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Sales Cycle</span>
+                    <span className="text-sm font-bold text-purple-600">{metrics.salesCycle} days</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-purple-500 h-3 rounded-full" style={{ width: `${metrics.salesCycle > 100 ? 100 : metrics.salesCycle}%` }}></div>
+                  </div>
+                </div>
+                {/* Conversion Rate */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Conversion Rate</span>
+                    <span className="text-sm font-bold text-orange-600">{metrics.conversionRate}%</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-orange-500 h-3 rounded-full" style={{ width: `${metrics.conversionRate}%` }}></div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No metrics data available</div>
+            )}
           </CardContent>
         </Card>
+        {/* Pipeline Growth Card */}
         <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Pipeline Growth</CardTitle>
             <CardDescription className="sr-only">Opportunity pipeline performance trends</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">This Month</span>
-              <span className="text-sm font-bold text-blue-600">+23</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Pipeline Value</span>
-              <span className="text-sm font-bold text-green-600">$2.4M</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Growth Rate</span>
-              <span className="text-sm font-bold text-purple-600">+18%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Target</span>
-              <span className="text-sm font-bold text-orange-600">$3.0M</span>
-            </div>
+            {growthLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              </div>
+            ) : growthError ? (
+              <div className="text-center text-red-600 text-sm">Error loading pipeline growth data</div>
+            ) : growth ? (
+              <>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">This Month</span>
+                  <span className="text-sm font-bold text-blue-600">+{growth.thisMonth}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Pipeline Value</span>
+                  <span className="text-sm font-bold text-green-600">${growth.pipelineValue}K</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Growth Rate</span>
+                  <span className="text-sm font-bold text-purple-600">{growth.growthRate > 0 ? '+' : ''}{growth.growthRate}%</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Target</span>
+                  <span className="text-sm font-bold text-orange-600">${growth.target}K</span>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No pipeline growth data available</div>
+            )}
           </CardContent>
         </Card>
       </div>

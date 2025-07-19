@@ -78,6 +78,82 @@ export const useLeads = () => {
   }
 }
 
+export const useLeadSources = () => {
+  const [leadSources, setLeadSources] = useState<Array<{source: string, count: number, percentage: number}>>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchLeadSources = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getLeadSourcesWithCounts()
+      
+      if (error) {
+        setError(error.message)
+      } else {
+        setLeadSources(data || [])
+      }
+    } catch (err) {
+      setError('Failed to fetch lead sources')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLeadSources()
+  }, [fetchLeadSources])
+
+  return {
+    leadSources,
+    loading,
+    error,
+    fetchLeadSources
+  }
+}
+
+export const useLeadResponseTime = () => {
+  const [responseTimeData, setResponseTimeData] = useState<{
+    averageResponseTime: number
+    fastestResponse: number
+    slowestResponse: number
+    targetResponseTime: number
+    responseTimePercentage: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchResponseTimeData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getLeadResponseTimeData()
+      
+      if (error) {
+        setError(error.message)
+      } else {
+        setResponseTimeData(data)
+      }
+    } catch (err) {
+      setError('Failed to fetch response time data')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchResponseTimeData()
+  }, [fetchResponseTimeData])
+
+  return {
+    responseTimeData,
+    loading,
+    error,
+    fetchResponseTimeData
+  }
+}
+
 export const useLead = (id: string) => {
   const [lead, setLead] = useState<Lead | null>(null)
   const [loading, setLoading] = useState(true)
@@ -328,6 +404,67 @@ export const useOpportunity = (id: string) => {
   return { opportunity, loading, error, fetchOpportunity }
 }
 
+export const useOpportunityMetrics = () => {
+  const [metrics, setMetrics] = useState<{
+    pipelineValue: number
+    winRate: number
+    avgDealSize: number
+    salesCycle: number
+    conversionRate: number
+    satisfaction: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchMetrics = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getOpportunityMetrics()
+      if (error) setError(String(error))
+      else setMetrics(data)
+    } catch (err) {
+      setError('Failed to fetch opportunity metrics')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchMetrics() }, [fetchMetrics])
+
+  return { metrics, loading, error, fetchMetrics }
+}
+
+export const usePipelineGrowth = () => {
+  const [growth, setGrowth] = useState<{
+    thisMonth: number
+    lastMonth: number
+    growthRate: number
+    pipelineValue: number
+    target: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchGrowth = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getPipelineGrowthStats()
+      if (error) setError(String(error))
+      else setGrowth(data)
+    } catch (err) {
+      setError('Failed to fetch pipeline growth stats')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchGrowth() }, [fetchGrowth])
+
+  return { growth, loading, error, fetchGrowth }
+}
+
 // ============================================================================
 // CONTACTS HOOKS
 // ============================================================================
@@ -403,6 +540,65 @@ export const useContacts = () => {
     createContact,
     updateContact
   }
+}
+
+export const useContactEngagement = () => {
+  const [engagement, setEngagement] = useState<{
+    high: number
+    medium: number
+    low: number
+    inactive: number
+    totalContacts: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchEngagement = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getContactEngagementStats()
+      if (error) setError(String(error))
+      else setEngagement(data)
+    } catch (err) {
+      setError('Failed to fetch engagement stats')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchEngagement() }, [fetchEngagement])
+
+  return { engagement, loading, error, fetchEngagement }
+}
+
+export const useContactGrowth = () => {
+  const [growth, setGrowth] = useState<{
+    thisMonth: number
+    lastMonth: number
+    growthRate: number
+    target: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchGrowth = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getContactGrowthStats()
+      if (error) setError(String(error))
+      else setGrowth(data)
+    } catch (err) {
+      setError('Failed to fetch growth stats')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchGrowth() }, [fetchGrowth])
+
+  return { growth, loading, error, fetchGrowth }
 }
 
 // ============================================================================
@@ -737,4 +933,62 @@ export const useSearch = () => {
     searchDeals,
     searchContacts
   }
+} 
+
+export const useDealPerformance = () => {
+  const [performance, setPerformance] = useState<{
+    winRate: number
+    avgDealSize: number
+    salesCycle: number
+    closeRate: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchPerformance = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getDealPerformanceStats()
+      if (error) setError(String(error))
+      else setPerformance(data)
+    } catch (err) {
+      setError('Failed to fetch deal performance stats')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchPerformance() }, [fetchPerformance])
+
+  return { performance, loading, error, fetchPerformance }
+}
+
+export const useRevenueTrends = () => {
+  const [trends, setTrends] = useState<{
+    thisMonth: number
+    lastMonth: number
+    growthRate: number
+    target: number
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchTrends = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await crmDatabase.getRevenueTrendsStats()
+      if (error) setError(String(error))
+      else setTrends(data)
+    } catch (err) {
+      setError('Failed to fetch revenue trends stats')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchTrends() }, [fetchTrends])
+
+  return { trends, loading, error, fetchTrends }
 } 

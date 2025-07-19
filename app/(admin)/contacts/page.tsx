@@ -2,12 +2,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
-import { useContacts, useCompanies } from "@/hooks/use-crm"
+import { useContacts, useCompanies, useContactEngagement, useContactGrowth } from "@/hooks/use-crm"
 import { useEffect, useState } from "react"
 
 export default function ContactsPage() {
   const { contacts, loading: contactsLoading, error: contactsError } = useContacts()
   const { companies, loading: companiesLoading } = useCompanies()
+  const { engagement, loading: engagementLoading, error: engagementError } = useContactEngagement()
+  const { growth, loading: growthLoading, error: growthError } = useContactGrowth()
   const [contactStats, setContactStats] = useState({
     totalContacts: 0,
     activeUsers: 0,
@@ -275,49 +277,58 @@ export default function ContactsPage() {
             <CardDescription className="sr-only">How often contacts interact with your business</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* High Engagement */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">High Engagement</span>
-                <span className="text-sm font-bold text-green-600">1,247</span>
+            {engagementLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
               </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-green-500 h-3 rounded-full" style={{ width: '45%' }}></div>
-              </div>
-            </div>
-
-            {/* Medium Engagement */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Medium Engagement</span>
-                <span className="text-sm font-bold text-blue-600">856</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '31%' }}></div>
-              </div>
-            </div>
-
-            {/* Low Engagement */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Low Engagement</span>
-                <span className="text-sm font-bold text-orange-600">432</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-orange-500 h-3 rounded-full" style={{ width: '16%' }}></div>
-              </div>
-            </div>
-
-            {/* Inactive */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Inactive</span>
-                <span className="text-sm font-bold text-red-600">312</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-red-500 h-3 rounded-full" style={{ width: '11%' }}></div>
-              </div>
-            </div>
+            ) : engagementError ? (
+              <div className="text-center text-red-600 text-sm">Error loading engagement data</div>
+            ) : engagement ? (
+              <>
+                {/* High Engagement */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">High Engagement</span>
+                    <span className="text-sm font-bold text-green-600">{engagement.high}</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-green-500 h-3 rounded-full" style={{ width: `${engagement.totalContacts ? Math.round((engagement.high / engagement.totalContacts) * 100) : 0}%` }}></div>
+                  </div>
+                </div>
+                {/* Medium Engagement */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Medium Engagement</span>
+                    <span className="text-sm font-bold text-blue-600">{engagement.medium}</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${engagement.totalContacts ? Math.round((engagement.medium / engagement.totalContacts) * 100) : 0}%` }}></div>
+                  </div>
+                </div>
+                {/* Low Engagement */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Low Engagement</span>
+                    <span className="text-sm font-bold text-orange-600">{engagement.low}</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-orange-500 h-3 rounded-full" style={{ width: `${engagement.totalContacts ? Math.round((engagement.low / engagement.totalContacts) * 100) : 0}%` }}></div>
+                  </div>
+                </div>
+                {/* Inactive */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Inactive</span>
+                    <span className="text-sm font-bold text-red-600">{engagement.inactive}</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-red-500 h-3 rounded-full" style={{ width: `${engagement.totalContacts ? Math.round((engagement.inactive / engagement.totalContacts) * 100) : 0}%` }}></div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No engagement data available</div>
+            )}
           </CardContent>
         </Card>
         <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
@@ -326,22 +337,34 @@ export default function ContactsPage() {
             <CardDescription className="sr-only">Monthly contact acquisition trends</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">This Month</span>
-              <span className="text-sm font-bold text-blue-600">+89</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Last Month</span>
-              <span className="text-sm font-bold text-green-600">+76</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Growth Rate</span>
-              <span className="text-sm font-bold text-purple-600">+15%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Target</span>
-              <span className="text-sm font-bold text-orange-600">+100</span>
-            </div>
+            {growthLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              </div>
+            ) : growthError ? (
+              <div className="text-center text-red-600 text-sm">Error loading growth data</div>
+            ) : growth ? (
+              <>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">This Month</span>
+                  <span className="text-sm font-bold text-blue-600">+{growth.thisMonth}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Last Month</span>
+                  <span className="text-sm font-bold text-green-600">+{growth.lastMonth}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Growth Rate</span>
+                  <span className="text-sm font-bold text-purple-600">{growth.growthRate > 0 ? '+' : ''}{growth.growthRate}%</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Target</span>
+                  <span className="text-sm font-bold text-orange-600">+{growth.target}</span>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No growth data available</div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   description: "AI-powered construction management platform for the Bahamas",
   keywords: ["construction", "management", "Bahamas", "TropiTech", "AI"],
   authors: [{ name: "TropiTech Solutions" }],
-  viewport: "width=device-width, initial-scale=1",
   icons: {
     icon: [
       { url: "/logo/1.png", sizes: "192x192", type: "image/png" },
@@ -30,6 +29,11 @@ export const metadata: Metadata = {
       { url: "/logo/1.png", sizes: "192x192", type: "image/png" },
     ],
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

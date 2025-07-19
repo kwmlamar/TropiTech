@@ -2,12 +2,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Filter, Download } from "lucide-react"
-import { useDeals, useCompanies } from "@/hooks/use-crm"
+import { useDeals, useCompanies, useDealPerformance, useRevenueTrends } from "@/hooks/use-crm"
 import { useEffect, useState } from "react"
 
 export default function DealsPage() {
   const { deals, loading: dealsLoading, error: dealsError } = useDeals()
   const { companies, loading: companiesLoading } = useCompanies()
+  const { performance, loading: performanceLoading, error: performanceError } = useDealPerformance()
+  const { trends, loading: trendsLoading, error: trendsError } = useRevenueTrends()
   const [dealStats, setDealStats] = useState({
     mrr: 0,
     activeUsers: 0,
@@ -285,49 +287,58 @@ export default function DealsPage() {
             <CardDescription className="sr-only">Key performance indicators for deals</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Win Rate */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Win Rate</span>
-                <span className="text-sm font-bold text-green-600">91%</span>
+            {performanceLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
               </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-green-500 h-3 rounded-full" style={{ width: '91%' }}></div>
-              </div>
-            </div>
-
-            {/* Avg Deal Size */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Avg Deal Size</span>
-                <span className="text-sm font-bold text-blue-600">$7.7K</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '77%' }}></div>
-              </div>
-            </div>
-
-            {/* Sales Cycle */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Sales Cycle</span>
-                <span className="text-sm font-bold text-purple-600">45 days</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-purple-500 h-3 rounded-full" style={{ width: '45%' }}></div>
-              </div>
-            </div>
-
-            {/* Close Rate */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Close Rate</span>
-                <span className="text-sm font-bold text-orange-600">67%</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-3">
-                <div className="bg-orange-500 h-3 rounded-full" style={{ width: '67%' }}></div>
-              </div>
-            </div>
+            ) : performanceError ? (
+              <div className="text-center text-red-600 text-sm">Error loading performance data</div>
+            ) : performance ? (
+              <>
+                {/* Win Rate */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Win Rate</span>
+                    <span className="text-sm font-bold text-green-600">{performance.winRate}%</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-green-500 h-3 rounded-full" style={{ width: `${performance.winRate}%` }}></div>
+                  </div>
+                </div>
+                {/* Avg Deal Size */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Avg Deal Size</span>
+                    <span className="text-sm font-bold text-blue-600">${performance.avgDealSize}K</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${performance.avgDealSize}%` }}></div>
+                  </div>
+                </div>
+                {/* Sales Cycle */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Sales Cycle</span>
+                    <span className="text-sm font-bold text-purple-600">{performance.salesCycle} days</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-purple-500 h-3 rounded-full" style={{ width: `${performance.salesCycle > 100 ? 100 : performance.salesCycle}%` }}></div>
+                  </div>
+                </div>
+                {/* Close Rate */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Close Rate</span>
+                    <span className="text-sm font-bold text-orange-600">{performance.closeRate}%</span>
+                  </div>
+                  <div className="w-full bg-white/30 rounded-full h-3">
+                    <div className="bg-orange-500 h-3 rounded-full" style={{ width: `${performance.closeRate}%` }}></div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No performance data available</div>
+            )}
           </CardContent>
         </Card>
         <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
@@ -336,22 +347,34 @@ export default function DealsPage() {
             <CardDescription className="sr-only">Monthly revenue performance metrics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">This Month</span>
-              <span className="text-sm font-bold text-blue-600">$456K</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Last Month</span>
-              <span className="text-sm font-bold text-green-600">$358K</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Growth</span>
-              <span className="text-sm font-bold text-purple-600">+27%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
-              <span className="font-medium text-gray-800">Target</span>
-              <span className="text-sm font-bold text-orange-600">$500K</span>
-            </div>
+            {trendsLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              </div>
+            ) : trendsError ? (
+              <div className="text-center text-red-600 text-sm">Error loading revenue trends data</div>
+            ) : trends ? (
+              <>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">This Month</span>
+                  <span className="text-sm font-bold text-blue-600">${trends.thisMonth}K</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Last Month</span>
+                  <span className="text-sm font-bold text-green-600">${trends.lastMonth}K</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Growth</span>
+                  <span className="text-sm font-bold text-purple-600">{trends.growthRate > 0 ? '+' : ''}{trends.growthRate}%</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-white/50">
+                  <span className="font-medium text-gray-800">Target</span>
+                  <span className="text-sm font-bold text-orange-600">${trends.target}K</span>
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-gray-500 text-sm">No revenue trends data available</div>
+            )}
           </CardContent>
         </Card>
       </div>
