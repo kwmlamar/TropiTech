@@ -152,9 +152,15 @@ export const crmDatabase = {
 
   // Create new contact
   async createContact(contact: Partial<Contact>) {
+    // Filter out empty company_name to avoid issues
+    const contactData = { ...contact }
+    if (contactData.company_name === '' || contactData.company_name === null || contactData.company_name === undefined) {
+      delete contactData.company_name
+    }
+    
     const { data, error } = await crmClient
       .from('contacts')
-      .insert(contact)
+      .insert(contactData)
       .select()
       .single()
     
@@ -806,6 +812,7 @@ export interface Contact {
   title?: string
   company_id?: string
   company_name?: string
+  island?: string
   contact_type?: string
   status?: string
   assigned_to?: string

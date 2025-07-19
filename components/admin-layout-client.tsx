@@ -75,16 +75,6 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
             Contacts
           </Link>
           <Link 
-            href="/opportunities" 
-            className={`text-sm font-medium px-4 py-2.5 rounded-3xl transition-all duration-200 ${
-              pathname === '/opportunities' 
-                ? 'bg-gray-900 text-white shadow-md' 
-                : 'text-foreground hover:text-white hover:bg-gray-900'
-            }`}
-          >
-            Opportunities
-          </Link>
-          <Link 
             href="/deals" 
             className={`text-sm font-medium px-4 py-2.5 rounded-3xl transition-all duration-200 ${
               pathname === '/deals' 
@@ -93,6 +83,16 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
             }`}
           >
             Deals
+          </Link>
+          <Link 
+            href="/opportunities" 
+            className={`text-sm font-medium px-4 py-2.5 rounded-3xl transition-all duration-200 ${
+              pathname === '/opportunities' 
+                ? 'bg-gray-900 text-white shadow-md' 
+                : 'text-foreground hover:text-white hover:bg-gray-900'
+            }`}
+          >
+            Opportunities
           </Link>
         </div>
 

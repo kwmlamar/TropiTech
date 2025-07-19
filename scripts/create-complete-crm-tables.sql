@@ -209,6 +209,7 @@ CREATE TABLE contacts (
   mobile VARCHAR(50),
   title VARCHAR(100),
   department VARCHAR(100),
+  island VARCHAR(100),
   contact_type contact_type DEFAULT 'lead',
   is_primary BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
@@ -604,6 +605,7 @@ CREATE INDEX IF NOT EXISTS idx_contacts_company_id ON contacts(company_id);
 CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 CREATE INDEX IF NOT EXISTS idx_contacts_assigned_to ON contacts(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_contacts_contact_type ON contacts(contact_type);
+CREATE INDEX IF NOT EXISTS idx_contacts_island ON contacts(island);
 
 -- Lead indexes
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);

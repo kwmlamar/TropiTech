@@ -1,9 +1,10 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Filter, Download } from "lucide-react"
+import { Filter, Download } from "lucide-react"
 import { useContacts, useCompanies, useContactEngagement, useContactGrowth } from "@/hooks/use-crm"
 import { useEffect, useState } from "react"
+import { AddContactDialogSimple } from "@/components/add-contact-dialog-simple"
 
 export default function ContactsPage() {
   const { contacts, loading: contactsLoading, error: contactsError } = useContacts()
@@ -99,9 +100,12 @@ export default function ContactsPage() {
                 <CardDescription className="sr-only">View and manage all contacts and their information</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
-                <Plus className="h-4 w-4 text-gray-600" />
-              </div>
+              <AddContactDialogSimple onContactAdded={() => {
+                // Refresh contacts data when a new contact is added
+                if (typeof window !== 'undefined') {
+                  window.location.reload()
+                }
+              }} />
               <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
                 <Filter className="h-4 w-4 text-gray-600" />
               </div>

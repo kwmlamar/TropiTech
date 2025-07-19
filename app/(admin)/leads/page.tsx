@@ -1,9 +1,10 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Filter, Download } from "lucide-react"
+import { Filter, Download } from "lucide-react"
 import { useLeads, useLeadSources, useLeadResponseTime } from "@/hooks/use-crm"
 import { useMemo } from "react"
+import { AddLeadDialogSimple } from "@/components/add-lead-dialog-simple"
 
 export default function LeadsPage() {
   const { leads, loading, error } = useLeads()
@@ -117,9 +118,12 @@ export default function LeadsPage() {
               <CardDescription className="sr-only">View and manage all leads in your pipeline</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
-                <Plus className="h-4 w-4 text-gray-600" />
-              </div>
+              <AddLeadDialogSimple onLeadAdded={() => {
+                // Refresh leads data when a new lead is added
+                if (typeof window !== 'undefined') {
+                  window.location.reload()
+                }
+              }} />
               <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
                 <Filter className="h-4 w-4 text-gray-600" />
               </div>

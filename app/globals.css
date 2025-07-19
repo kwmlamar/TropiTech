@@ -365,4 +365,9 @@
   .status-error {
     @apply bg-destructive text-destructive-foreground;
   }
+
+  /* Ensure Select components appear above dialogs */
+  [data-radix-popper-content-wrapper] {
+    z-index: 100002 !important;
+  }
 }

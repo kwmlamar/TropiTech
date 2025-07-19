@@ -1,5 +1,4 @@
 /* eslint-env browser */
-/* global Blob, window, document */
 'use client'
 
 import { useState } from "react"
