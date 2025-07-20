@@ -241,6 +241,7 @@ CREATE TABLE leads (
   phone VARCHAR(50),
   company_size VARCHAR(50),
   industry VARCHAR(100),
+  island VARCHAR(100),
   description TEXT,
   status lead_status DEFAULT 'new',
   priority lead_priority DEFAULT 'medium',
@@ -614,6 +615,7 @@ CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON leads(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
 CREATE INDEX IF NOT EXISTS idx_leads_tropitrack_client_id ON leads(tropitrack_client_id);
 CREATE INDEX IF NOT EXISTS idx_leads_trial_status ON leads(trial_status);
+CREATE INDEX IF NOT EXISTS idx_leads_island ON leads(island);
 
 -- Deal indexes
 CREATE INDEX IF NOT EXISTS idx_deals_status ON deals(status);

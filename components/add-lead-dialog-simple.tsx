@@ -26,6 +26,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
     email: '',
     phone: '',
     company_name: '',
+    island: '',
     status: 'new',
     stage: 'interested',
     source: 'website',
@@ -52,6 +53,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
           email: '',
           phone: '',
           company_name: '',
+          island: '',
           status: 'new',
           stage: 'interested',
           source: 'website',
@@ -143,7 +145,6 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
                 value={formData.first_name}
                 onChange={(e) => handleInputChange('first_name', e.target.value)}
                 placeholder="John"
-                required
               />
             </div>
             <div>
@@ -153,7 +154,6 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
                 value={formData.last_name}
                 onChange={(e) => handleInputChange('last_name', e.target.value)}
                 placeholder="Doe"
-                required
               />
             </div>
           </div>
@@ -167,7 +167,6 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="john@company.com"
-                required
               />
             </div>
             <div>
@@ -182,15 +181,45 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="company_name">Company Name</Label>
-            <Input
-              id="company_name"
-              value={formData.company_name}
-              onChange={(e) => handleInputChange('company_name', e.target.value)}
-              placeholder="Acme Corporation"
-              required
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <Label htmlFor="company_name">Company Name</Label>
+              <Input
+                id="company_name"
+                value={formData.company_name}
+                onChange={(e) => handleInputChange('company_name', e.target.value)}
+                placeholder="Acme Corporation"
+              />
+            </div>
+            <div>
+              <Label htmlFor="island">Island</Label>
+              <Select value={formData.island} onValueChange={(value) => handleInputChange('island', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select island" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="New Providence">New Providence</SelectItem>
+                  <SelectItem value="Grand Bahama">Grand Bahama</SelectItem>
+                  <SelectItem value="Abaco">Abaco</SelectItem>
+                  <SelectItem value="Eleuthera">Eleuthera</SelectItem>
+                  <SelectItem value="Exuma">Exuma</SelectItem>
+                  <SelectItem value="Andros">Andros</SelectItem>
+                  <SelectItem value="Bimini">Bimini</SelectItem>
+                  <SelectItem value="Cat Island">Cat Island</SelectItem>
+                  <SelectItem value="Long Island">Long Island</SelectItem>
+                  <SelectItem value="San Salvador">San Salvador</SelectItem>
+                  <SelectItem value="Acklins">Acklins</SelectItem>
+                  <SelectItem value="Crooked Island">Crooked Island</SelectItem>
+                  <SelectItem value="Mayaguana">Mayaguana</SelectItem>
+                  <SelectItem value="Inagua">Inagua</SelectItem>
+                  <SelectItem value="Berry Islands">Berry Islands</SelectItem>
+                  <SelectItem value="Harbour Island">Harbour Island</SelectItem>
+                  <SelectItem value="Spanish Wells">Spanish Wells</SelectItem>
+                  <SelectItem value="Ragged Island">Ragged Island</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>

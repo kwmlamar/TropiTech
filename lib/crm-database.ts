@@ -773,6 +773,7 @@ export interface Lead {
   email?: string
   phone?: string
   company_name?: string
+  island?: string
   status?: string
   stage?: string
   source?: string
