@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Users, Building2, CreditCard, Flag, Settings, Brain, LayoutDashboard } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Users, Building2, CreditCard, Flag, Settings, Brain, LayoutDashboard, Bot } from 'lucide-react'
+import { TropiAssistant } from '@/components/tropi-assistant'
 
 interface User {
   id: string
@@ -29,6 +30,7 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
     { title: "Feature Flags", url: "/feature-flags", icon: Flag },
     { title: "System Logs", url: "/system-logs", icon: Settings },
     { title: "TropiBrain", url: "/tropi-brain", icon: Brain },
+    { title: "TropiAssistant", url: "/tropi-assistant", icon: Bot },
   ]
 
   // const isActive = (path: string) => {
@@ -178,6 +180,8 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
         </div>
       </aside>
 
+      {/* TropiAssistant */}
+      <TropiAssistant />
 
     </div>
   )

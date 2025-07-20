@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { TropiAssistant } from "@/components/tropi-assistant";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -58,6 +59,7 @@ export default function RootLayout({
         <Providers>
           <div className="relative min-h-screen">
             {children}
+            <TropiAssistant />
           </div>
         </Providers>
       </body>
