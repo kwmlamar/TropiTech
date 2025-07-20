@@ -446,8 +446,7 @@ Just tell me what you'd like to do in natural language!`)
                   <p className="text-sm">{message.content}</p>
                   {message.data && (
                     <div className="mt-2 p-2 bg-background/50 rounded text-xs">
-                      <p className="font-medium">Created:</p>
-                      <pre className="whitespace-pre-wrap">{JSON.stringify(message.data, null, 2)}</pre>
+                      <p className="font-medium text-green-600">✅ Successfully created!</p>
                     </div>
                   )}
                   <p className="text-xs opacity-70 mt-1">
