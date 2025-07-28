@@ -56,6 +56,16 @@ export const crmDatabase = {
     return { data, error }
   },
 
+  // Delete lead
+  async deleteLead(id: string) {
+    const { error } = await crmClient
+      .from('leads')
+      .delete()
+      .eq('id', id)
+    
+    return { success: !error, error }
+  },
+
   // Get lead metrics
   async getLeadMetrics() {
     const { data, error } = await crmClient
@@ -768,14 +778,12 @@ export const crmDatabase = {
 // Define proper types for CRM entities
 export interface Lead {
   id: string
-  first_name?: string
-  last_name?: string
+  contact_name?: string
   email?: string
   phone?: string
   company_name?: string
   island?: string
   status?: string
-  stage?: string
   source?: string
   priority?: string
   assigned_to?: string

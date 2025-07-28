@@ -7,18 +7,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useLeads } from '@/hooks/use-crm'
 import { toast } from 'sonner'
+import type { Lead } from '@/lib/crm-database'
 
-interface AddLeadDialogProps {
-  onLeadAdded?: () => void
+interface EditLeadDialogProps {
+  lead: Lead | null
+  onLeadUpdated?: () => void
+  onClose: () => void
 }
 
-export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
-  const [open, setOpen] = useState(false)
+export function EditLeadDialogSimple({ lead, onLeadUpdated, onClose }: EditLeadDialogProps) {
   const [loading, setLoading] = useState(false)
-  const { createLead } = useLeads()
+  const { updateLead } = useLeads()
 
   const [formData, setFormData] = useState({
     contact_name: '',
@@ -33,34 +35,42 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
     estimated_value: 0
   })
 
+  // Populate form data when lead changes
+  useEffect(() => {
+    if (lead) {
+      setFormData({
+        contact_name: lead.contact_name || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        company_name: lead.company_name || '',
+        island: lead.island || '',
+        status: lead.status || 'new',
+        source: lead.source || 'website',
+        priority: lead.priority || 'medium',
+        description: lead.description || '',
+        estimated_value: lead.estimated_value || 0
+      })
+    }
+  }, [lead])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!lead) return
+    
     setLoading(true)
 
     try {
-      const result = await createLead(formData)
+      const result = await updateLead(lead.id, formData)
       
       if (result.error) {
         toast.error(result.error)
       } else {
-        toast.success('Lead added successfully!')
-        setOpen(false)
-        setFormData({
-          contact_name: '',
-          email: '',
-          phone: '',
-          company_name: '',
-          island: '',
-          status: 'new',
-          source: 'website',
-          priority: 'medium',
-          description: '',
-          estimated_value: 0
-        })
-        onLeadAdded?.()
+        toast.success('Lead updated successfully!')
+        onClose()
+        onLeadUpdated?.()
       }
     } catch {
-      toast.error('Failed to add lead')
+      toast.error('Failed to update lead')
     } finally {
       setLoading(false)
     }
@@ -79,12 +89,8 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
     setMounted(true)
   }, [])
 
-  if (!open) {
-    return (
-      <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200 cursor-pointer" onClick={() => setOpen(true)}>
-        <Plus className="h-4 w-4 text-gray-600" />
-      </div>
-    )
+  if (!lead || !mounted) {
+    return null
   }
 
   const dialogContent = (
@@ -117,11 +123,11 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827' }}>Add New Lead</h2>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#111827' }}>Edit Lead</h2>
           <Button 
             variant="outline" 
             size="icon" 
-            onClick={() => setOpen(false)}
+            onClick={onClose}
             style={{ width: '32px', height: '32px' }}
           >
             <X className="h-4 w-4" />
@@ -129,7 +135,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
         </div>
         
         <p style={{ color: '#6B7280', marginBottom: '24px' }}>
-          Enter the lead information below to add them to your pipeline.
+          Update the lead information below.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -219,10 +225,14 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
                   <SelectItem value="contacted">Contacted</SelectItem>
                   <SelectItem value="qualified">Qualified</SelectItem>
                   <SelectItem value="unqualified">Unqualified</SelectItem>
+                  <SelectItem value="app_interested">App Interested</SelectItem>
+                  <SelectItem value="demo_scheduled">Demo Scheduled</SelectItem>
+                  <SelectItem value="trial_active">Trial Active</SelectItem>
+                  <SelectItem value="app_converted">App Converted</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div>
               <Label htmlFor="priority">Priority</Label>
               <Select value={formData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
@@ -281,30 +291,17 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #E5E7EB' }}>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading} style={{ backgroundColor: '#2563EB', color: 'white' }}>
-              {loading ? 'Adding...' : 'Add Lead'}
+              {loading ? 'Updating...' : 'Update Lead'}
             </Button>
           </div>
         </form>
       </div>
     </div>
   )
-
-  if (!mounted) {
-    return (
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="w-10 h-10 rounded-full border border-gray-300 hover:bg-white/20 transition-all duration-200"
-        onClick={() => setOpen(true)}
-      >
-        <Plus className="h-4 w-4 text-gray-600" />
-      </Button>
-    )
-  }
 
   return mounted && typeof document !== 'undefined' ? createPortal(dialogContent, document.body) : null
 } 

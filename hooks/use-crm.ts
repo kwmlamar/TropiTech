@@ -64,6 +64,24 @@ export const useLeads = () => {
     }
   }, [])
 
+  const deleteLead = useCallback(async (id: string) => {
+    try {
+      const { success, error } = await crmDatabase.deleteLead(id)
+      
+      if (error) {
+        throw new Error(error.message)
+      }
+      
+      if (success) {
+        setLeads(prev => prev.filter(lead => lead.id !== id))
+      }
+      
+      return { success, error: null }
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Failed to delete lead' }
+    }
+  }, [])
+
   useEffect(() => {
     fetchLeads()
   }, [fetchLeads])
@@ -74,7 +92,8 @@ export const useLeads = () => {
     error,
     fetchLeads,
     createLead,
-    updateLead
+    updateLead,
+    deleteLead
   }
 }
 

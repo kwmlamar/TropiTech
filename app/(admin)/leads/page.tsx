@@ -1,15 +1,56 @@
 'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Filter, Download } from "lucide-react"
+import { Filter, Download, Eye, Edit, Trash2 } from "lucide-react"
 import { useLeads, useLeadSources, useLeadResponseTime } from "@/hooks/use-crm"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { AddLeadDialogSimple } from "@/components/add-lead-dialog-simple"
+import { EditLeadDialogSimple } from "@/components/edit-lead-dialog-simple"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import type { Lead } from "@/lib/crm-database"
 
 export default function LeadsPage() {
-  const { leads, loading, error } = useLeads()
+  const { leads, loading, error, deleteLead } = useLeads()
   const { leadSources, loading: sourcesLoading, error: sourcesError } = useLeadSources()
   const { responseTimeData, loading: responseLoading, error: responseError } = useLeadResponseTime()
+
+  // Edit dialog state
+  const [editingLead, setEditingLead] = useState<Lead | null>(null)
+
+  // Action handlers
+  const handleViewLead = (leadId: string) => {
+    console.log('View lead:', leadId)
+    toast.info('View lead functionality coming soon!')
+    // TODO: Implement view lead functionality
+    // This could open a modal or navigate to a detail page
+  }
+
+  const handleEditLead = (leadId: string) => {
+    const lead = leads.find(l => l.id === leadId)
+    if (lead) {
+      setEditingLead(lead)
+    }
+  }
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (window.confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
+      try {
+        const result = await deleteLead(leadId)
+        if (result.success) {
+          toast.success('Lead deleted successfully')
+          // The leads list is automatically updated by the hook
+        } else {
+          toast.error(`Failed to delete lead: ${result.error}`)
+        }
+      } catch (error) {
+        toast.error('Failed to delete lead')
+        console.error('Failed to delete lead:', error)
+      }
+    }
+  }
 
   // Calculate metrics from real data
   const metrics = useMemo(() => {
@@ -24,10 +65,10 @@ export default function LeadsPage() {
       conversionRate: 0
     }
 
-    const appInterested = leads.filter(lead => lead.stage === 'interested').length
-    const demoScheduled = leads.filter(lead => lead.stage === 'demo_scheduled').length
-    const trialActive = leads.filter(lead => lead.stage === 'trial_active').length
-    const appConverted = leads.filter(lead => lead.stage === 'converted').length
+    const appInterested = leads.filter(lead => lead.status === 'app_interested').length
+    const demoScheduled = leads.filter(lead => lead.status === 'demo_scheduled').length
+    const trialActive = leads.filter(lead => lead.status === 'trial_active').length
+    const appConverted = leads.filter(lead => lead.status === 'app_converted').length
     const trialsStarted = leads.filter(lead => lead.has_trial === true).length
     const conversions = appConverted
     const conversionRate = leads.length > 0 ? Math.round((conversions / leads.length) * 100) : 0
@@ -412,6 +453,156 @@ export default function LeadsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Lead Table */}
+      <Card className="bg-white/40 backdrop-blur-sm border border-gray-200/50">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg font-bold">All Leads</CardTitle>
+              <CardDescription>Complete overview of all leads in your pipeline</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <AddLeadDialogSimple onLeadAdded={() => {
+                // Refresh leads data when a new lead is added
+                if (typeof window !== 'undefined') {
+                  window.location.reload()
+                }
+              }} />
+              <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
+                <Filter className="h-4 w-4 text-gray-600" />
+              </div>
+              <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-gray-300 hover:bg-white/20 transition-all duration-200">
+                <Download className="h-4 w-4 text-gray-600" />
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border border-gray-200/50">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Company</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Value</TableHead>
+                  <TableHead>Created</TableHead>
+                                     <TableHead>Updated</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leads.length > 0 ? (
+                  leads.map((lead) => (
+                    <TableRow key={lead.id} className="hover:bg-white/10">
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="font-semibold text-gray-900">{lead.company_name || 'Unknown Company'}</div>
+                          {lead.description && (
+                            <div className="text-sm text-gray-600 truncate max-w-xs">{lead.description}</div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          {lead.contact_name && (
+                            <div className="text-sm font-medium text-gray-900">{lead.contact_name}</div>
+                          )}
+                          {lead.email && (
+                            <div className="text-xs text-gray-600">{lead.email}</div>
+                          )}
+                          {lead.phone && (
+                            <div className="text-xs text-gray-600">{lead.phone}</div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusVariant(lead.status || 'new')} className="text-xs">
+                          {formatStatus(lead.status || 'new')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs capitalize">
+                          {lead.source ? lead.source.replace('_', ' ') : 'Unknown'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium text-gray-900">
+                          {lead.estimated_value ? `$${(lead.estimated_value / 1000).toFixed(1)}K` : 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-600">
+                          {lead.created_at ? getTimeAgo(lead.created_at) : 'Unknown'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-600">
+                          {lead.updated_at ? getTimeAgo(lead.updated_at) : 'Unknown'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                            onClick={() => handleViewLead(lead.id)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-600"
+                            onClick={() => handleEditLead(lead.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                            onClick={() => handleDeleteLead(lead.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                          <Filter className="h-4 w-4 text-gray-500" />
+                        </div>
+                        <p className="text-sm font-medium">No leads found</p>
+                        <p className="text-xs text-gray-500">Start by adding your first lead</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Edit Lead Dialog */}
+      <EditLeadDialogSimple
+        lead={editingLead}
+        onLeadUpdated={() => {
+          // The leads list will be automatically updated by the hook
+          setEditingLead(null)
+        }}
+        onClose={() => {
+          setEditingLead(null)
+        }}
+      />
     </div>
   )
 }
@@ -465,5 +656,27 @@ function getStatusColor(status: string): string {
       return 'text-red-600'
     default:
       return 'text-gray-600'
+  }
+}
+
+function formatStatus(status: string): string {
+  return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
+
+function getStatusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case 'new':
+      return 'secondary'
+    case 'app_interested':
+    case 'demo_scheduled':
+      return 'default'
+    case 'trial_active':
+      return 'outline'
+    case 'app_converted':
+      return 'default'
+    case 'lost':
+      return 'destructive'
+    default:
+      return 'secondary'
   }
 } 

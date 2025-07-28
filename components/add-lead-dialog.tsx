@@ -21,13 +21,11 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
   const { createLead } = useLeads()
 
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    contact_name: '',
     email: '',
     phone: '',
     company_name: '',
     status: 'new',
-    stage: 'interested',
     source: 'website',
     priority: 'medium',
     description: '',
@@ -48,13 +46,11 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
         toast.success('Lead added successfully!')
         setOpen(false)
         setFormData({
-          first_name: '',
-          last_name: '',
+          contact_name: '',
           email: '',
           phone: '',
           company_name: '',
           status: 'new',
-          stage: 'interested',
           source: 'website',
           priority: 'medium',
           description: '',
@@ -92,27 +88,15 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 bg-gray-50 p-4 rounded-lg">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="first_name">First Name</Label>
-              <Input
-                id="first_name"
-                value={formData.first_name}
-                onChange={(e) => handleInputChange('first_name', e.target.value)}
-                placeholder="John"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name</Label>
-              <Input
-                id="last_name"
-                value={formData.last_name}
-                onChange={(e) => handleInputChange('last_name', e.target.value)}
-                placeholder="Doe"
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="contact_name">Contact Name</Label>
+            <Input
+              id="contact_name"
+              value={formData.contact_name}
+              onChange={(e) => handleInputChange('contact_name', e.target.value)}
+              placeholder="John Doe"
+              required
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -150,7 +134,7 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
@@ -165,20 +149,7 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="stage">Stage</Label>
-              <Select value={formData.stage} onValueChange={(value) => handleInputChange('stage', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select stage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="interested">Interested</SelectItem>
-                  <SelectItem value="demo_scheduled">Demo Scheduled</SelectItem>
-                  <SelectItem value="trial_active">Trial Active</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
             <div className="space-y-2">
               <Label htmlFor="priority">Priority</Label>
               <Select value={formData.priority} onValueChange={(value) => handleInputChange('priority', value)}>

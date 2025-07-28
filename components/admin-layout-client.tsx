@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Users, Building2, CreditCard, Flag, Settings, Brain, LayoutDashboard, Bot } from 'lucide-react'
-import { TropiAssistant } from '@/components/tropi-assistant'
 
 interface User {
   id: string
@@ -179,9 +178,6 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
           </nav>
         </div>
       </aside>
-
-      {/* TropiAssistant */}
-      <TropiAssistant />
 
     </div>
   )
