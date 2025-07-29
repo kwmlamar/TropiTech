@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Users, Building2, CreditCard, Flag, Settings, Brain, LayoutDashboard, Bot } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Users, Building2, CreditCard, Flag, Settings, Brain, LayoutDashboard } from 'lucide-react'
 
 interface User {
   id: string
@@ -28,8 +28,7 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
     { title: "Billing & Subscriptions", url: "/billing-subscriptions", icon: CreditCard },
     { title: "Feature Flags", url: "/feature-flags", icon: Flag },
     { title: "System Logs", url: "/system-logs", icon: Settings },
-    { title: "TropiBrain", url: "/tropi-brain", icon: Brain },
-    { title: "TropiAssistant", url: "/tropi-assistant", icon: Bot },
+    { title: "Idea Hub", url: "/idea-hub", icon: Brain },
   ]
 
   // const isActive = (path: string) => {
