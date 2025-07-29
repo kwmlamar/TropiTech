@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
-import { createClient } from "@/utils/supabase/server"
 import { Users, UserCheck, Shield, UserPlus } from "lucide-react"
 import UserManagementClient from "./user-management-client"
 import { tropiTrackServerApi } from "@/utils/supabase/tropitrack-server"
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 declare global {
   var process: {
@@ -14,22 +14,36 @@ declare global {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+function createServiceClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing Supabase service role environment variables')
+  }
+  
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+}
+
 async function getUserManagementData() {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   
   // Get all profiles with company information from TropiTech
   const { data: tropiTechUsers, error: usersError } = await supabase
     .from('profiles')
     .select(`
       id,
+      user_id,
       full_name,
+      first_name,
+      last_name,
       email,
       role,
-      status,
-      last_login,
+      is_active,
+      last_login_at,
       created_at,
       company_id,
-      companies (
+      companies!profiles_company_id_fkey (
         id,
         name,
         status
@@ -39,6 +53,15 @@ async function getUserManagementData() {
 
   if (usersError) {
     // Error fetching TropiTech users
+  }
+
+  // Test simple count query to verify database connection
+  const { error: countError } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+  
+  if (countError) {
+    // Error counting profiles
   }
 
   // Get users from TropiTrack (with error handling)
@@ -81,6 +104,8 @@ async function getUserManagementData() {
     source: 'TropiTech' as const
   }))
 
+
+
   // Combine users from both sources
   const allUsers = [...transformedTropiTechUsers, ...transformedTropiTrackUsers]
 
@@ -92,7 +117,7 @@ async function getUserManagementData() {
   const { count: tropiTechActiveUsers } = await supabase
     .from('profiles')
     .select('*', { count: 'exact', head: true })
-    .eq('status', 'active')
+    .eq('is_active', true)
 
   const { count: tropiTechAdminUsers } = await supabase
     .from('profiles')

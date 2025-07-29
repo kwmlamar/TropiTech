@@ -19,34 +19,105 @@ export default function Index() {
               </div>
               <h1 className="text-xl font-bold text-foreground">TropiTech Command Center</h1>
             </div>
-            <Button asChild>
-              <Link href="/dashboard">Access Dashboard</Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/login">Admin Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/dashboard">Access Dashboard</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Construction Management
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(16,185,129,0.1),transparent_50%)]"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        
+        {/* Main Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-8 animate-fade-in">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+            Built for The Bahamas
+          </div>
+          
+          {/* Main Headline */}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-tight">
+            <span className="bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
+              Innovative
+            </span>
             <br />
-            <span className="text-primary">Made Simple</span>
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Streamline your Bahamian construction business with our comprehensive admin dashboard. 
-            Manage users, track projects, and leverage AI-powered insights.
+            <span className="bg-gradient-to-r from-primary via-blue-600 to-green-600 bg-clip-text text-transparent">
+              Software Solutions
+            </span>
+            <br />
+            <span className="text-4xl md:text-5xl lg:text-6xl text-muted-foreground font-medium">
+              for The Bahamas
+            </span>
+          </h1>
+          
+          {/* Subtitle */}
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
+            We build cutting-edge software solutions that transform Bahamian businesses. 
+            From AI-powered applications to custom development, we bring global technology 
+            standards to local enterprises.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" asChild>
+          
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" asChild>
               <Link href="/dashboard">
-                Get Started <ArrowRight className="ml-2 w-4 h-4" />
+                Start Your Project
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline">
-              Learn More
+            <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-semibold rounded-xl border-2 hover:bg-primary/5 transition-all duration-300" asChild>
+              <Link href="#services">
+                View Our Services
+              </Link>
             </Button>
+          </div>
+          
+          {/* Admin Access */}
+          <div className="flex justify-center mb-8">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
+              <Link href="/login">
+                <Shield className="w-4 h-4 mr-2" />
+                Admin Access
+              </Link>
+            </Button>
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">50+</div>
+              <div className="text-muted-foreground">Projects Delivered</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">100%</div>
+              <div className="text-muted-foreground">Local Support</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">24/7</div>
+              <div className="text-muted-foreground">AI-Powered</div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-muted-foreground/50 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>

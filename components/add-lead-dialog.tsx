@@ -35,7 +35,6 @@ export function AddLeadDialog({ onLeadAdded }: AddLeadDialogProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    console.log('Dialog open state:', open)
 
     try {
       const result = await createLead(formData)

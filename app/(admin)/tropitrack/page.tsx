@@ -322,8 +322,8 @@ async function getTropiTrackAppStats() {
       tropiTrackUsers: tropiTrackUsers || [],
       lastLoginMap
     }
-  } catch (error) {
-    console.error('Error fetching TropiTrack stats:', error)
+  } catch {
+    // Error fetching TropiTrack stats
     
     // Return fallback data if TropiTrack is not available
     return {

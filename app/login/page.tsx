@@ -27,6 +27,13 @@ export default async function LoginPage({
               </AlertDescription>
             </Alert>
           )}
+          {params.error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>
+                {decodeURIComponent(params.error)}
+              </AlertDescription>
+            </Alert>
+          )}
           <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

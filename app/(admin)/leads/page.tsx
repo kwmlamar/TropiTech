@@ -21,8 +21,7 @@ export default function LeadsPage() {
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
 
   // Action handlers
-  const handleViewLead = (leadId: string) => {
-    console.log('View lead:', leadId)
+  const handleViewLead = () => {
     toast.info('View lead functionality coming soon!')
     // TODO: Implement view lead functionality
     // This could open a modal or navigate to a detail page
@@ -45,9 +44,8 @@ export default function LeadsPage() {
         } else {
           toast.error(`Failed to delete lead: ${result.error}`)
         }
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete lead')
-        console.error('Failed to delete lead:', error)
       }
     }
   }
@@ -549,7 +547,7 @@ export default function LeadsPage() {
                             variant="ghost" 
                             size="sm" 
                             className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                            onClick={() => handleViewLead(lead.id)}
+                            onClick={() => handleViewLead()}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

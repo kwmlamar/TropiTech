@@ -15,19 +15,42 @@ async function getCurrentUser() {
     // Get user profile data
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('full_name, email, role')
+      .select('full_name, email, role, first_name, last_name, is_active')
       .eq('user_id', user.id)
       .single()
 
     if (profileError) {
       // console.warn('Error fetching profile:', profileError.message)
+      // If no profile exists, create one
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email,
+          first_name: user.user_metadata?.first_name,
+          last_name: user.user_metadata?.last_name,
+          role: 'user',
+          is_active: true
+        })
+        .select('full_name, email, role, first_name, last_name, is_active')
+        .single()
+
+      if (!createError && newProfile) {
+        return {
+          id: user.id,
+          email: user.email || newProfile.email || 'Unknown',
+          name: newProfile.full_name || user.user_metadata?.full_name || 'Admin User',
+          role: newProfile.role || 'user'
+        }
+      }
     }
 
     return {
       id: user.id,
       email: user.email || profile?.email || 'Unknown',
       name: profile?.full_name || user.user_metadata?.full_name || 'Admin User',
-      role: profile?.role || 'admin'
+      role: profile?.role || 'user'
     }
   } catch {
     // console.error('Error fetching user data:', error)

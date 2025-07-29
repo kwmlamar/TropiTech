@@ -13,11 +13,16 @@ import { Search, Filter, Eye, Edit, MoreHorizontal, Building2, User, Calendar, D
 
 interface UserData {
   id: string
+  user_id?: string
   full_name: string | null
+  first_name?: string | null
+  last_name?: string | null
   email: string
   role: string | null
-  status: string | null
-  last_login: string | null
+  is_active?: boolean
+  status?: string | null
+  last_login_at?: string | null
+  last_login?: string | null
   created_at: string
   company_id: string | null
   companies: {
@@ -55,10 +60,11 @@ export default function UserManagementClient({ users }: UserManagementClientProp
     return matchesSearch && matchesRole && matchesStatus && matchesCompany && matchesSource
   })
 
-  const getStatusBadge = (status: string | null) => {
-    if (!status) return <Badge variant="secondary">Unknown</Badge>
+  const getStatusBadge = (user: UserData) => {
+    // Use is_active if available, otherwise fall back to status
+    const isActive = user.is_active !== undefined ? user.is_active : (user.status === "active")
     
-    return status === "active" 
+    return isActive 
       ? <Badge className="bg-success text-success-foreground">Active</Badge>
       : <Badge variant="secondary">Inactive</Badge>
   }
@@ -76,7 +82,8 @@ export default function UserManagementClient({ users }: UserManagementClientProp
     </Badge>
   }
 
-  const formatLastLogin = (lastLogin: string | null) => {
+  const formatLastLogin = (user: UserData) => {
+    const lastLogin = user.last_login_at || user.last_login
     if (!lastLogin) return "Never"
     return formatDistanceToNow(new Date(lastLogin), { addSuffix: true })
   }
@@ -280,7 +287,7 @@ export default function UserManagementClient({ users }: UserManagementClientProp
                       </div>
                     </TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell>{getStatusBadge(user)}</TableCell>
                     <TableCell>
                       <Badge variant={user.source === 'TropiTrack' ? 'secondary' : 'default'}>
                         {user.source || 'TropiTech'}
@@ -289,7 +296,7 @@ export default function UserManagementClient({ users }: UserManagementClientProp
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        {formatLastLogin(user.last_login)}
+                        {formatLastLogin(user)}
                       </div>
                     </TableCell>
                     <TableCell>{formatCreatedAt(user.created_at)}</TableCell>
