@@ -23,12 +23,12 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
 
   const navigationItems = [
     { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Idea Hub", url: "/idea-hub", icon: Brain },
     { title: "User Management", url: "/user-management", icon: Users },
     { title: "Company Management", url: "/company-management", icon: Building2 },
     { title: "Billing & Subscriptions", url: "/billing-subscriptions", icon: CreditCard },
     { title: "Feature Flags", url: "/feature-flags", icon: Flag },
     { title: "System Logs", url: "/system-logs", icon: Settings },
-    { title: "Idea Hub", url: "/idea-hub", icon: Brain },
   ]
 
   // const isActive = (path: string) => {
