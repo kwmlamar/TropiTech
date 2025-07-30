@@ -10,7 +10,7 @@ import {
   ArrowDownRight
 } from "lucide-react"
 import { createTropiTrackClient } from "@/utils/supabase/tropitrack-server"
-import { format, subDays, startOfDay } from "date-fns"
+import { format, subDays, startOfDay, startOfWeek, endOfWeek } from "date-fns"
 
 async function getTropiTrackAppStats() {
   try {
@@ -22,6 +22,10 @@ async function getTropiTrackAppStats() {
     const yesterday = startOfDay(subDays(now, 1))
     const lastWeek = startOfDay(subDays(now, 7))
     const lastMonth = startOfDay(subDays(now, 30))
+    
+    // Current week ranges (Monday to Sunday)
+    const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 }) // Monday
+    const currentWeekEnd = endOfWeek(now, { weekStartsOn: 1 })     // Sunday
 
     // App Usage Statistics - Real data from TropiTrack
     const { count: totalUsers } = await supabase
@@ -174,30 +178,34 @@ async function getTropiTrackAppStats() {
       .select('*', { count: 'exact', head: true })
       .eq('status', 'paid')
 
-    // Weekly activity metrics
+    // Current week activity metrics (Monday to Sunday)
     const { count: pendingTimesheets } = await supabase
       .from('timesheets')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'pending')
-      .gte('created_at', lastWeek.toISOString())
+      .gte('created_at', currentWeekStart.toISOString())
+      .lte('created_at', currentWeekEnd.toISOString())
 
     const { count: approvedTimesheets } = await supabase
       .from('timesheets')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'approved')
-      .gte('created_at', lastWeek.toISOString())
+      .gte('created_at', currentWeekStart.toISOString())
+      .lte('created_at', currentWeekEnd.toISOString())
 
     const { count: confirmedPayroll } = await supabase
       .from('payroll')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'approved')
-      .gte('created_at', lastWeek.toISOString())
+      .gte('created_at', currentWeekStart.toISOString())
+      .lte('created_at', currentWeekEnd.toISOString())
 
     const { count: paidPayroll } = await supabase
       .from('payroll')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'paid')
-      .gte('created_at', lastWeek.toISOString())
+      .gte('created_at', currentWeekStart.toISOString())
+      .lte('created_at', currentWeekEnd.toISOString())
 
     // Get TropiTrack users with last login from auth sessions
     const { data: tropiTrackUsers } = await supabase
@@ -473,14 +481,14 @@ export default async function TropiTrackStatsPage() {
 
       {/* Activity Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        {/* This Week's Activity */}
+        {/* Current Week's Activity */}
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              This Week's Activity
+              Current Week's Activity
             </CardTitle>
-            <CardDescription>Weekly activity metrics</CardDescription>
+            <CardDescription>Activity metrics for this week (Monday to Sunday)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">

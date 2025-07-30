@@ -321,9 +321,14 @@ export default function TropiBrain() {
   }
 
   const calculateOverallScore = (idea: AppIdea) => {
-    return Math.round(
-      (idea.market_size + idea.revenue_potential + idea.bahamas_relevance - idea.competition_level - idea.development_complexity) / 5
-    )
+    // Weighted scoring system that rewards high potential while considering challenges
+    const positiveScore = (idea.market_size + idea.revenue_potential + idea.bahamas_relevance) / 3
+    const challengeScore = (idea.competition_level + idea.development_complexity) / 2
+    
+    // Calculate overall score: 70% positive factors, 30% challenge factors (inverted)
+    const overallScore = (positiveScore * 0.7) + ((100 - challengeScore) * 0.3)
+    
+    return Math.round(Math.max(0, Math.min(100, overallScore)))
   }
 
   const topIdeas = filteredIdeas
@@ -472,9 +477,9 @@ export default function TropiBrain() {
             <CardDescription>Highest scoring ideas across all industries</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topIdeas.map((idea) => (
-                <Card key={idea.id} className="relative hover:shadow-md transition-shadow duration-200">
+                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+               {topIdeas.map((idea) => (
+                 <Card key={idea.id} className="relative hover:shadow-md transition-shadow duration-200 bg-white/60">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -569,7 +574,6 @@ export default function TropiBrain() {
                     <div className="font-medium">{label}</div>
                     <div className="flex items-center gap-2">
                       <span className={`font-bold ${color}`}>{count}</span>
-                      {getStatusBadge(status)}
                     </div>
                   </div>
                 )
@@ -635,10 +639,7 @@ export default function TropiBrain() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        {industries.find(i => i.name === idea.industry)?.icon}
-                        <span className="text-sm">{idea.industry}</span>
-                      </div>
+                      <span className="text-sm">{idea.industry}</span>
                     </TableCell>
                     <TableCell>
                       <div className={`font-bold ${getScoreColor(idea.market_size)}`}>
@@ -1025,8 +1026,7 @@ export default function TropiBrain() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Industry</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    {industries.find(i => i.name === viewingIdea.industry)?.icon}
+                  <div className="mt-1">
                     <span className="text-lg">{viewingIdea.industry}</span>
                   </div>
                 </div>
