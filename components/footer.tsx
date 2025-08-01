@@ -6,8 +6,8 @@ export default function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <Palmtree className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -86,15 +86,15 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">Contact</h3>
             <div className="space-y-3 text-sm text-gray-400">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 <span>+1 (242) 555-0123</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span>hello@tropitechsolutions.com</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
                 <span>Downtown Nassau, The Bahamas</span>
               </div>
@@ -104,7 +104,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">© 2024 TropiTech Solutions. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
               Privacy Policy
             </a>
