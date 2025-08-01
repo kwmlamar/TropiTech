@@ -483,11 +483,12 @@ export default function LeadsPage() {
                 <TableRow>
                   <TableHead>Company</TableHead>
                   <TableHead>Contact</TableHead>
+                  <TableHead>Island</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Value</TableHead>
                   <TableHead>Created</TableHead>
-                                     <TableHead>Updated</TableHead>
+                  <TableHead>Updated</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -517,6 +518,11 @@ export default function LeadsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
+                        <div className="text-sm text-gray-900">
+                          {lead.island || 'N/A'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <Badge variant={getStatusVariant(lead.status || 'new')} className="text-xs">
                           {formatStatus(lead.status || 'new')}
                         </Badge>
@@ -528,7 +534,7 @@ export default function LeadsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="font-medium text-gray-900">
-                          {lead.estimated_value ? `$${(lead.estimated_value / 1000).toFixed(1)}K` : 'N/A'}
+                          {lead.estimated_value ? `$${lead.estimated_value.toLocaleString()}` : 'N/A'}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -573,7 +579,7 @@ export default function LeadsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                       <div className="flex flex-col items-center gap-2">
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                           <Filter className="h-4 w-4 text-gray-500" />

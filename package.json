@@ -14,7 +14,10 @@
     "seed:tropitrack": "tsx scripts/seed-tropitrack-data.ts",
     "setup:crm": "tsx scripts/setup-crm-database.ts",
     "db:create": "tsx scripts/create-complete-crm-tables.sql",
-    "db:seed": "tsx scripts/seed-crm-data.sql"
+    "db:seed": "tsx scripts/seed-crm-data.sql",
+    "add:island": "tsx scripts/add-island-to-leads-simple.ts",
+    "test:island": "tsx scripts/test-island-migration.ts",
+    "debug:island": "tsx scripts/debug-island-values.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",

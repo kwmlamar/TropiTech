@@ -10,7 +10,9 @@ import {
   ArrowDownRight
 } from "lucide-react"
 import { createTropiTrackClient } from "@/utils/supabase/tropitrack-server"
+import { createClient } from "@/utils/supabase/server"
 import { format, subDays, startOfDay, startOfWeek, endOfWeek } from "date-fns"
+import TodoClient from "./todo-client"
 
 async function getTropiTrackAppStats() {
   try {
@@ -268,6 +270,39 @@ async function getTropiTrackAppStats() {
       }
     })
 
+    // Get todos data from main TropiTech database
+    const mainSupabase = await createClient()
+    const { data: todos } = await mainSupabase
+      .from('todos')
+      .select(`
+        id,
+        title,
+        description,
+        status,
+        created_at
+      `)
+      .order('created_at', { ascending: false })
+
+    // Get todo statistics from main TropiTech database
+    const { count: totalTodos } = await mainSupabase
+      .from('todos')
+      .select('*', { count: 'exact', head: true })
+
+    const { count: pendingTodos } = await mainSupabase
+      .from('todos')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending')
+
+    const { count: completedTodos } = await mainSupabase
+      .from('todos')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'completed')
+
+    const { count: inProgressTodos } = await mainSupabase
+      .from('todos')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'in_progress')
+
     return {
       // User metrics
       totalUsers: totalUsers || 0,
@@ -327,6 +362,13 @@ async function getTropiTrackAppStats() {
       featureUsage,
       errorLogs,
 
+      // Todo data
+      todos: todos || [],
+      totalTodos: totalTodos || 0,
+      pendingTodos: pendingTodos || 0,
+      completedTodos: completedTodos || 0,
+      inProgressTodos: inProgressTodos || 0,
+
       tropiTrackUsers: tropiTrackUsers || [],
       lastLoginMap
     }
@@ -375,6 +417,11 @@ async function getTropiTrackAppStats() {
       deviceUsage: { desktop: 0, mobile: 0, tablet: 0 },
       featureUsage: { timeTracking: 0, projectManagement: 0, taskManagement: 0, payroll: 0, reporting: 0 },
       errorLogs: [],
+      todos: [],
+      totalTodos: 0,
+      pendingTodos: 0,
+      completedTodos: 0,
+      inProgressTodos: 0,
       tropiTrackUsers: [],
       lastLoginMap: new Map()
     }
@@ -626,7 +673,8 @@ export default async function TropiTrackStatsPage() {
         </CardContent>
       </Card>
 
-
+      {/* Todo List Table */}
+      <TodoClient todos={stats.todos} />
 
       {/* System Health Summary */}
       <Card className="shadow-sm">

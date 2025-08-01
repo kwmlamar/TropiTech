@@ -96,7 +96,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0,0,0,0.5)',
-        zIndex: 100000,
+        zIndex: 50,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -112,7 +112,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
           maxHeight: '90vh',
           overflow: 'auto',
           position: 'relative',
-          zIndex: 100001,
+          zIndex: 51,
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
         }}
       >
@@ -178,7 +178,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
             </div>
             <div>
               <Label htmlFor="island">Island</Label>
-              <Select value={formData.island} onValueChange={(value) => handleInputChange('island', value)}>
+              <Select value={formData.island || "none"} onValueChange={(value) => handleInputChange('island', value === "none" ? "" : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select island" />
                 </SelectTrigger>
@@ -264,7 +264,7 @@ export function AddLeadDialogSimple({ onLeadAdded }: AddLeadDialogProps) {
                 onChange={(e) => handleInputChange('estimated_value', parseFloat(e.target.value) || 0)}
                 placeholder="5000"
                 min="0"
-                step="100"
+                step="1"
               />
             </div>
           </div>
