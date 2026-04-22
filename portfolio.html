@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TropiTech Solutions Portfolio — Premium hand-coded websites and AI automation projects built for Caribbean businesses. Bimini Island Tours, Chicken Souse For Life, ODS Website.">
+    <title>Portfolio — TropiTech Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Portfolio page extras */
+        .project-detail-section {
+            background: var(--graphite);
+            padding-block: clamp(4rem, 7vw, 6rem);
+            border-bottom: 1px solid var(--border);
+        }
+        .project-detail-section:nth-child(even) {
+            background: var(--graphite-2);
+        }
+        .project-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+        .project-visual {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            aspect-ratio: 4/3;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .project-visual-bg {
+            position: absolute; inset: 0;
+        }
+        .project-visual-label {
+            position: relative; z-index: 1;
+            text-align: center; padding: 2rem;
+        }
+        .project-visual-label p {
+            font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--text-muted); margin-top: 0.5rem;
+        }
+        .project-visual-num {
+            font-family: var(--font-display);
+            font-size: 8rem; font-weight: 600; line-height: 1;
+            opacity: 0.04; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%,-50%);
+        }
+        .project-info { }
+        .project-cat {
+            display: inline-block;
+            padding: 0.25rem 0.85rem;
+            background: var(--indigo-glow);
+            border: 1px solid rgba(108,71,255,0.2);
+            border-radius: 100px;
+            font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--indigo-lt);
+            margin-bottom: 1.25rem;
+        }
+        .project-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 600; line-height: 1.1;
+            letter-spacing: -0.01em;
+            margin-bottom: 1rem;
+        }
+        .project-desc {
+            font-size: 0.95rem; color: var(--text-dim);
+            line-height: 1.8; margin-bottom: 2rem;
+        }
+        .project-tags {
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .project-tag {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.72rem; font-weight: 500;
+            color: var(--text-dim);
+        }
+        .project-link {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-size: 0.8rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--indigo-lt);
+            border-bottom: 1px solid rgba(108,71,255,0.3);
+            padding-bottom: 0.2rem;
+            transition: color var(--transition), border-color var(--transition), gap var(--transition);
+        }
+        .project-link:hover { color: var(--white); border-color: var(--white); gap: 0.8rem; }
+
+        @media (max-width: 900px) {
+            .project-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="section-label">Portfolio</div>
+
+<!-- Navigation -->
+<nav class="site-nav inner-nav" id="main-nav">
+    <a href="index.html" class="nav-logo">
+        <span class="logo-mark">TT</span>
+        TropiTech
+    </a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="portfolio.html" class="active">Portfolio</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="nav-cta">Get a Quote</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="nav-mobile" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
+    <a href="contact.html" class="mobile-cta">Get a Quote</a>
+</div>
+
+<!-- Inner Hero -->
+<section class="inner-hero" data-section="Portfolio">
+    <div class="inner-hero-bg"></div>
+    <div class="container inner-hero-content">
+        <span class="inner-page-tag">Selected Work</span>
+        <h1 class="inner-hero-heading">
+            Built for the<br>
+            Caribbean.<br>
+            <em>Respected Worldwide.</em>
+        </h1>
+        <p class="inner-hero-sub">
+            Every project starts with a conversation and ends with something that works. Here's a selection of what we've built.
+        </p>
+    </div>
+</section>
+
+<!-- ============================================================
+     PORTFOLIO GRID OVERVIEW
+     ============================================================ -->
+<section class="section portfolio-page" data-section="Work">
+    <div class="container">
+
+        <div class="portfolio-filter-bar">
+            <button class="filter-btn active">All Work</button>
+            <button class="filter-btn">Tourism / Hospitality</button>
+            <button class="filter-btn">Food &amp; Beverage</button>
+            <button class="filter-btn">Professional Services</button>
+        </div>
+
+        <div class="portfolio-full-grid">
+            <div class="portfolio-card">
+                <div class="portfolio-card-visual">
+                    <div class="card-bg-pattern"></div>
+                    <span class="portfolio-card-num">01</span>
+                    <div class="portfolio-card-label">
+                        <div class="portfolio-card-label-title">Bimini Island Tours</div>
+                        <span class="portfolio-cat-tag">Tourism / Hospitality</span>
+                    </div>
+                </div>
+                <div class="portfolio-card-info">
+                    <span class="portfolio-card-meta">Multi-page · GSAP · Booking Form</span>
+                    <a href="#bimini" class="portfolio-view-link">View →</a>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-card-visual" style="background: #1A1018;">
+                    <div class="card-bg-pattern" style="background: radial-gradient(ellipse at 60% 30%, rgba(200,69,100,0.15) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(200,160,69,0.08) 0%, transparent 50%);"></div>
+                    <span class="portfolio-card-num">02</span>
+                    <div class="portfolio-card-label">
+                        <div class="portfolio-card-label-title">Chicken Souse For Life</div>
+                        <span class="portfolio-cat-tag">Food &amp; Beverage</span>
+                    </div>
+                </div>
+                <div class="portfolio-card-info">
+                    <span class="portfolio-card-meta">Editorial · Brand Storytelling</span>
+                    <a href="#chickensouse" class="portfolio-view-link">View →</a>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-card-visual" style="background: #0F1620;">
+                    <div class="card-bg-pattern" style="background: radial-gradient(ellipse at 50% 40%, rgba(69,120,200,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(200,160,69,0.06) 0%, transparent 50%);"></div>
+                    <span class="portfolio-card-num">03</span>
+                    <div class="portfolio-card-label">
+                        <div class="portfolio-card-label-title">ODS Website</div>
+                        <span class="portfolio-cat-tag">Professional Services</span>
+                    </div>
+                </div>
+                <div class="portfolio-card-info">
+                    <span class="portfolio-card-meta">Corporate · Clean Architecture</span>
+                    <a href="#ods" class="portfolio-view-link">View →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     PROJECT DETAILS
+     ============================================================ -->
+
+<!-- Bimini Island Tours -->
+<section class="project-detail-section" id="bimini" data-section="Bimini Island Tours">
+    <div class="container project-inner">
+        <div class="project-visual reveal-left">
+            <div class="project-visual-bg" style="background: radial-gradient(ellipse at 30% 40%, rgba(108,71,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(200,160,69,0.08) 0%, transparent 50%); background-color: var(--graphite-4);"></div>
+            <span class="project-visual-num">01</span>
+            <div class="project-visual-label">
+                <div style="font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2.5rem); font-weight:600;">Bimini Island Tours</div>
+                <p>Screenshot coming soon — drop your image here</p>
+            </div>
+        </div>
+        <div class="project-info reveal-right">
+            <span class="project-cat">Tourism / Hospitality</span>
+            <h2 class="project-title">Bimini Island Tours</h2>
+            <p class="project-desc">
+                A full multi-page website for a Bahamian local guide bringing the magic of Bimini to the world. The challenge: capture the raw beauty and authentic spirit of island life while delivering a digital experience sharp enough to compete with large booking platforms.
+            </p>
+            <p class="project-desc">
+                We built the entire site hand-coded with GSAP-powered animations, a multi-step booking form, a curated tour listings page, and a full image gallery — all optimized for mobile and fast enough to load on the island's real-world connectivity.
+            </p>
+            <div class="project-tags">
+                <span class="project-tag">Custom HTML/CSS/JS</span>
+                <span class="project-tag">GSAP Animations</span>
+                <span class="project-tag">Booking Form</span>
+                <span class="project-tag">Image Gallery</span>
+                <span class="project-tag">Tour Listings</span>
+                <span class="project-tag">Mobile-First</span>
+            </div>
+            <a href="../bimini-island-tours/index.html" class="project-link" target="_blank">Visit Live Site →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Chicken Souse For Life -->
+<section class="project-detail-section" id="chickensouse" data-section="Chicken Souse">
+    <div class="container project-inner">
+        <div class="project-visual reveal-left" style="order: 2;">
+            <div class="project-visual-bg" style="background: radial-gradient(ellipse at 60% 30%, rgba(200,69,100,0.15) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(200,160,69,0.08) 0%, transparent 50%); background-color: #1A1018;"></div>
+            <span class="project-visual-num" style="color: rgba(255,255,255,0.04);">02</span>
+            <div class="project-visual-label">
+                <div style="font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2.5rem); font-weight:600;">Chicken Souse<br>For Life</div>
+                <p>Screenshot coming soon — drop your image here</p>
+            </div>
+        </div>
+        <div class="project-info reveal-left" style="order: 1;">
+            <span class="project-cat">Food &amp; Beverage</span>
+            <h2 class="project-title">Chicken Souse For Life</h2>
+            <p class="project-desc">
+                Not just a restaurant website — a love letter to Bahamian food culture. Chicken Souse For Life needed a site that matched its heart: warm, rich, deeply rooted in local tradition, and proud of what it serves. We delivered an editorial-style experience that tells the story before the customer ever reads the menu.
+            </p>
+            <p class="project-desc">
+                The design features a warm, cinematic palette with dramatic food photography framing, immersive section layouts, and editorial copy that makes you feel the steam rising from the pot. The result is a digital presence as memorable as the dish itself.
+            </p>
+            <div class="project-tags">
+                <span class="project-tag">Editorial Design</span>
+                <span class="project-tag">Brand Storytelling</span>
+                <span class="project-tag">Custom Typography</span>
+                <span class="project-tag">Food Photography Layout</span>
+                <span class="project-tag">Scroll Animations</span>
+            </div>
+            <a href="../chickensouseforlife/index.html" class="project-link" target="_blank">Visit Live Site →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ODS Website -->
+<section class="project-detail-section" id="ods" data-section="ODS Website">
+    <div class="container project-inner">
+        <div class="project-visual reveal-left">
+            <div class="project-visual-bg" style="background: radial-gradient(ellipse at 50% 40%, rgba(69,120,200,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(200,160,69,0.06) 0%, transparent 50%); background-color: #0F1620;"></div>
+            <span class="project-visual-num" style="color: rgba(255,255,255,0.04);">03</span>
+            <div class="project-visual-label">
+                <div style="font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2.5rem); font-weight:600;">ODS Website</div>
+                <p>Screenshot coming soon — drop your image here</p>
+            </div>
+        </div>
+        <div class="project-info reveal-right">
+            <span class="project-cat">Professional Services</span>
+            <h2 class="project-title">ODS Website</h2>
+            <p class="project-desc">
+                A professional services firm needed a digital presence that communicated expertise, trust, and precision. The brief was clear: clean, confident, and corporate — without being cold. The site needed to instill confidence in prospective clients from the first scroll.
+            </p>
+            <p class="project-desc">
+                We built a focused, architectural website with a structured layout that guides visitors through the firm's services, team, and approach. Clean typographic hierarchy, subtle motion, and a restrained palette position ODS as the serious, capable firm it is.
+            </p>
+            <div class="project-tags">
+                <span class="project-tag">Corporate Design</span>
+                <span class="project-tag">Clean Architecture</span>
+                <span class="project-tag">Services Pages</span>
+                <span class="project-tag">Team Profile Layout</span>
+                <span class="project-tag">Lead Capture</span>
+            </div>
+            <a href="../ODS Website/index.html" class="project-link" target="_blank">Visit Live Site →</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta-banner" data-section="Get Started">
+    <div class="cta-banner-bg"></div>
+    <div class="cta-banner-content">
+        <span class="section-eyebrow" style="justify-content: center;">Your Project, Next</span>
+        <h2 class="cta-banner-heading reveal">
+            Ready to Build<br>Something That<br><em>Actually Stands Out?</em>
+        </h2>
+        <p class="cta-banner-sub reveal">
+            Every one of our projects starts with a conversation. Tell us about your business and what you need — we'll take it from there.
+        </p>
+        <div class="cta-banner-actions reveal">
+            <a href="contact.html" class="btn btn-gold">Start Your Project &nbsp;→</a>
+            <a href="services.html" class="btn btn-outline">Explore Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-mark">TT</span>
+                    TropiTech Solutions
+                </a>
+                <p class="footer-brand-text">Caribbean-based AI &amp; web design agency. Building the digital future for Caribbean businesses — one hand-coded site at a time.</p>
+            </div>
+            <div>
+                <p class="footer-col-title">Navigation</p>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Projects</p>
+                <ul class="footer-links">
+                    <li><a href="#bimini">Bimini Island Tours</a></li>
+                    <li><a href="#chickensouse">Chicken Souse For Life</a></li>
+                    <li><a href="#ods">ODS Website</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Contact</p>
+                <ul class="footer-links">
+                    <li><a href="mailto:hello@tropitech.co">hello@tropitech.co</a></li>
+                    <li><a href="contact.html">Get a Quote</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="#" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© <span id="footer-year"></span> TropiTech Solutions. Caribbean AI &amp; Web Agency. Built by TropiTech.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+<script>
+    // Filter buttons (visual only — expand with JS filtering as needed)
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>

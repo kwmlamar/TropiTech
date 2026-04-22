@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TropiTech Products — TropiChat, the WhatsApp Business management platform built for Caribbean businesses. AI-powered inbox, smart replies, bookings, and automations.">
+    <title>Products — TropiTech Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ---- Products page extras ---- */
+        .tropichat-hero {
+            background: var(--graphite);
+            position: relative; overflow: hidden;
+            padding-top: 9rem;
+            padding-bottom: 0;
+        }
+        .tropichat-hero-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 15% 40%, rgba(37,211,102,0.09) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 85% 20%, rgba(108,71,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 70% at 50% 100%, rgba(37,211,102,0.04) 0%, transparent 60%);
+        }
+        /* WhatsApp green as an accent for TropiChat sections */
+        :root {
+            --wa-green: #25D366;
+            --wa-green-dk: #1aad52;
+            --wa-green-glow: rgba(37, 211, 102, 0.15);
+            --wa-green-glow2: rgba(37, 211, 102, 0.08);
+        }
+
+        .tc-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0.9rem;
+            background: rgba(37,211,102,0.1);
+            border: 1px solid rgba(37,211,102,0.25);
+            border-radius: 100px;
+            font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--wa-green);
+            margin-bottom: 1.5rem;
+        }
+        .tc-badge-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--wa-green);
+            animation: pulseDot 2s ease infinite;
+        }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        .tropichat-lockup {
+            position: relative; z-index: 1;
+            padding-bottom: 5rem;
+        }
+        .tropichat-logo-mark {
+            display: inline-flex; align-items: center; gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .tropichat-logo-icon {
+            width: 52px; height: 52px;
+            background: var(--wa-green);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 32px var(--wa-green-glow);
+        }
+        .tropichat-logo-text {
+            font-family: var(--font-display);
+            font-size: 1.6rem; font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .tropichat-logo-text span { color: var(--wa-green); }
+
+        .tropichat-headline {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6vw, 6rem);
+            font-weight: 600; line-height: 1.05;
+            letter-spacing: -0.02em;
+            max-width: 16ch;
+            margin-bottom: 1.5rem;
+        }
+        .tropichat-headline em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--wa-green), #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Dashboard mockup */
+        .tc-mockup-wrap {
+            position: relative;
+            margin-top: 4rem;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            background: var(--graphite-3);
+            min-height: 320px;
+        }
+        .tc-mockup-bar {
+            background: var(--graphite-4);
+            padding: 0.85rem 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .tc-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .tc-mockup-url {
+            flex: 1; margin-left: 0.75rem;
+            background: var(--graphite-3);
+            border-radius: 6px; padding: 0.3rem 0.75rem;
+            font-size: 0.75rem; color: var(--text-muted);
+        }
+        .tc-mockup-body {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 280px;
+        }
+        .tc-sidebar {
+            border-right: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+        .tc-sidebar-header {
+            padding: 0.5rem 1rem 1rem;
+            font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .tc-chat-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            cursor: default;
+            transition: background 0.2s;
+        }
+        .tc-chat-item:hover, .tc-chat-item.active { background: var(--graphite-4); }
+        .tc-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+        }
+        .tc-chat-meta { flex: 1; min-width: 0; }
+        .tc-chat-name { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+        .tc-chat-preview { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tc-chat-time { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+        .tc-unread {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--wa-green);
+            font-size: 0.62rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .tc-main-panel {
+            display: flex; flex-direction: column;
+        }
+        .tc-main-header {
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .tc-main-header-left { display: flex; align-items: center; gap: 0.75rem; }
+        .tc-main-title { font-size: 0.9rem; font-weight: 600; }
+        .tc-main-sub { font-size: 0.72rem; color: var(--wa-green); }
+        .tc-stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1px; background: var(--border);
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+        .tc-stat-box {
+            background: var(--graphite-2);
+            padding: 0.85rem 1rem;
+            text-align: center;
+        }
+        .tc-stat-val {
+            font-family: var(--font-display);
+            font-size: 1.4rem; font-weight: 600;
+            color: var(--wa-green); line-height: 1;
+        }
+        .tc-stat-lbl { font-size: 0.62rem; color: var(--text-muted); margin-top: 0.2rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+        .tc-messages { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+        .tc-bubble {
+            max-width: 60%;
+            padding: 0.6rem 0.85rem;
+            border-radius: 12px;
+            font-size: 0.78rem; line-height: 1.5;
+        }
+        .tc-bubble.incoming {
+            background: var(--graphite-4);
+            color: var(--off-white);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .tc-bubble.outgoing {
+            background: rgba(37,211,102,0.15);
+            border: 1px solid rgba(37,211,102,0.2);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .tc-bubble.ai-tag::before {
+            content: '✦ AI';
+            display: block;
+            font-size: 0.6rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--wa-green);
+            margin-bottom: 0.3rem;
+        }
+
+        /* Feature grid */
+        .tc-features-section { background: var(--graphite-2); }
+        .tc-features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-top: 4rem;
+            align-items: start;
+        }
+        .tc-feature-card {
+            background: var(--graphite-2);
+            padding: 2.5rem;
+            opacity: 0; transform: translateY(40px);
+            transition: background var(--transition);
+        }
+        .tc-feature-card:hover { background: var(--graphite-3); }
+        .tc-feature-icon {
+            width: 48px; height: 48px;
+            background: var(--wa-green-glow2);
+            border: 1px solid rgba(37,211,102,0.2);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; margin-bottom: 1.5rem;
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .tc-feature-card:hover .tc-feature-icon {
+            background: var(--wa-green-glow);
+            border-color: rgba(37,211,102,0.35);
+        }
+        .tc-feature-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem; font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+        .tc-feature-text {
+            font-size: 0.88rem; color: var(--text-dim); line-height: 1.75;
+        }
+
+        /* Pricing */
+        .tc-pricing-section { background: var(--graphite); }
+        .tc-pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 4rem;
+            align-items: start;
+        }
+        .tc-plan-card {
+            background: var(--graphite-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem;
+            opacity: 0; transform: translateY(40px);
+            transition: border-color var(--transition);
+        }
+        .tc-plan-card:hover { border-color: var(--border-hover); }
+        .tc-plan-card.featured {
+            background: var(--graphite-3);
+            border-color: rgba(37,211,102,0.3);
+        }
+        .tc-plan-card.featured:hover { border-color: var(--wa-green); }
+        .tc-plan-tag {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            background: rgba(37,211,102,0.12);
+            border: 1px solid rgba(37,211,102,0.25);
+            border-radius: 100px;
+            font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--wa-green);
+            margin-bottom: 1.25rem;
+        }
+        .tc-plan-name {
+            font-family: var(--font-display);
+            font-size: 1.4rem; font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+        .tc-plan-desc {
+            font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.6;
+        }
+        .tc-plan-price {
+            display: flex; align-items: baseline; gap: 0.25rem;
+            margin-bottom: 1.75rem;
+        }
+        .tc-plan-price .amount {
+            font-family: var(--font-display);
+            font-size: 3rem; font-weight: 600; line-height: 1;
+        }
+        .tc-plan-price .period {
+            font-size: 0.82rem; color: var(--text-dim);
+        }
+        .tc-plan-features {
+            display: flex; flex-direction: column; gap: 0.65rem;
+            margin-bottom: 2rem;
+        }
+        .tc-plan-feature {
+            display: flex; align-items: flex-start; gap: 0.7rem;
+            font-size: 0.85rem; color: var(--text-dim);
+        }
+        .tc-plan-feature::before {
+            content: '✓';
+            color: var(--wa-green);
+            font-weight: 700; flex-shrink: 0;
+        }
+        .btn-wa {
+            background: var(--wa-green);
+            color: var(--graphite);
+            border: 1px solid var(--wa-green);
+            font-weight: 700;
+        }
+        .btn-wa:hover {
+            background: #20BD5B;
+            border-color: #20BD5B;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--wa-green-glow);
+        }
+
+        /* Coming soon panel */
+        .tc-coming-soon {
+            background: var(--graphite-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .tc-coming-soon-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;
+        }
+        .tc-coming-soon-text {
+            font-size: 0.88rem; color: var(--text-dim); line-height: 1.75;
+        }
+
+        @media (max-width: 1000px) {
+            .tc-mockup-body { grid-template-columns: 1fr; }
+            .tc-sidebar { display: none; }
+            .tc-features-grid { grid-template-columns: repeat(2, 1fr); }
+            .tc-pricing-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .tc-features-grid { grid-template-columns: 1fr; }
+            .tc-stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="section-label">Products</div>
+
+<!-- Navigation -->
+<nav class="site-nav inner-nav" id="main-nav">
+    <a href="index.html" class="nav-logo">
+        <span class="logo-mark">TT</span>
+        TropiTech
+    </a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="nav-cta">Get a Quote</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="nav-mobile" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
+    <a href="contact.html" class="mobile-cta">Get a Quote</a>
+</div>
+
+<!-- ============================================================
+     TROPICHAT HERO
+     ============================================================ -->
+<section class="tropichat-hero" data-section="TropiChat" id="tropichat">
+    <div class="tropichat-hero-bg"></div>
+    <div class="hero-grid-line" style="mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 75%); opacity: 0.25;"></div>
+
+    <div class="container tropichat-lockup">
+        <div class="tc-badge">
+            <span class="tc-badge-dot"></span>
+            Live · In Beta
+        </div>
+
+        <div class="tropichat-logo-mark">
+            <img src="tropichat-logo.png" alt="TropiChat" style="width:52px;height:52px;object-fit:contain;">
+            <div class="tropichat-logo-text">Tropi<span>Chat</span></div>
+        </div>
+
+        <h1 class="tropichat-headline" id="tc-headline">
+            Your WhatsApp<br>
+            Is Your Business.<br>
+            <em>Treat It That Way.</em>
+        </h1>
+        <p style="font-size: clamp(0.95rem, 1.6vw, 1.1rem); color: var(--text-dim); max-width: 50ch; line-height: 1.75; margin-bottom: 2.5rem; opacity: 0;" id="tc-sub">
+            TropiChat turns your WhatsApp Business account into a full command center — unified inbox, AI-powered smart replies, booking management, lead tracking, and automations. Built by TropiTech for Caribbean businesses.
+        </p>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; opacity: 0;" id="tc-ctas">
+            <a href="https://tropichat.chat" target="_blank" class="btn btn-wa">Visit TropiChat.chat &nbsp;→</a>
+            <a href="contact.html" class="btn btn-outline">Request Early Access</a>
+        </div>
+
+        <!-- Mockup -->
+        <div class="tc-mockup-wrap reveal-scale" style="margin-top: 4rem;">
+            <div class="tc-mockup-bar">
+                <div class="tc-dot" style="background:#FF5F57;"></div>
+                <div class="tc-dot" style="background:#FFBD2E;"></div>
+                <div class="tc-dot" style="background:#28CA41;"></div>
+                <div class="tc-mockup-url">tropichat.chat/dashboard</div>
+            </div>
+            <div class="tc-mockup-body">
+                <!-- Sidebar -->
+                <div class="tc-sidebar">
+                    <div class="tc-sidebar-header">Conversations</div>
+                    <div class="tc-chat-item active">
+                        <div class="tc-avatar" style="background: rgba(37,211,102,0.15); color: var(--wa-green);">MJ</div>
+                        <div class="tc-chat-meta">
+                            <div class="tc-chat-name">Marcus Johnson</div>
+                            <div class="tc-chat-preview">How many spots left for tomorrow?</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem;">
+                            <div class="tc-chat-time">2m</div>
+                            <div class="tc-unread">1</div>
+                        </div>
+                    </div>
+                    <div class="tc-chat-item">
+                        <div class="tc-avatar" style="background: rgba(108,71,255,0.15); color: var(--indigo-lt);">SA</div>
+                        <div class="tc-chat-meta">
+                            <div class="tc-chat-name">Simone A.</div>
+                            <div class="tc-chat-preview">Booking confirmed ✓</div>
+                        </div>
+                        <div class="tc-chat-time">1h</div>
+                    </div>
+                    <div class="tc-chat-item">
+                        <div class="tc-avatar" style="background: rgba(200,160,69,0.15); color: var(--gold);">DP</div>
+                        <div class="tc-chat-meta">
+                            <div class="tc-chat-name">Darnell P.</div>
+                            <div class="tc-chat-preview">What's the price for a group of 6?</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem;">
+                            <div class="tc-chat-time">3h</div>
+                            <div class="tc-unread">2</div>
+                        </div>
+                    </div>
+                    <div class="tc-chat-item">
+                        <div class="tc-avatar" style="background: rgba(37,211,102,0.1); color: var(--text-dim);">TW</div>
+                        <div class="tc-chat-meta">
+                            <div class="tc-chat-name">Tanya W.</div>
+                            <div class="tc-chat-preview">Can we reschedule to Friday?</div>
+                        </div>
+                        <div class="tc-chat-time">5h</div>
+                    </div>
+                </div>
+
+                <!-- Main panel -->
+                <div class="tc-main-panel">
+                    <div class="tc-main-header">
+                        <div class="tc-main-header-left">
+                            <div class="tc-avatar" style="background: rgba(37,211,102,0.15); color: var(--wa-green);">MJ</div>
+                            <div>
+                                <div class="tc-main-title">Marcus Johnson</div>
+                                <div class="tc-main-sub">● Online</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <div style="padding:0.3rem 0.7rem; background:var(--indigo-glow); border:1px solid rgba(108,71,255,0.2); border-radius:100px; font-size:0.65rem; font-weight:600; color:var(--indigo-lt); letter-spacing:0.08em; text-transform:uppercase;">Lead</div>
+                            <div style="padding:0.3rem 0.7rem; background:var(--wa-green-glow2); border:1px solid rgba(37,211,102,0.2); border-radius:100px; font-size:0.65rem; font-weight:600; color:var(--wa-green); letter-spacing:0.08em; text-transform:uppercase;">Tour Inquiry</div>
+                        </div>
+                    </div>
+                    <div class="tc-messages">
+                        <div class="tc-bubble incoming">Hey! Do you still have spots for the Bimini reef snorkel tomorrow morning? Party of 3.</div>
+                        <div class="tc-bubble outgoing ai-tag">Hi Marcus! Yes, we have 3 spots available for the 9am Bimini Reef Snorkel — that's $85 per person ($255 total). It includes gear, guide, and round-trip transfer from North Bimini dock. Want me to hold those spots for you?</div>
+                        <div class="tc-bubble incoming">That sounds perfect! Yes please hold them. Do you take credit card?</div>
+                        <div style="text-align:center; font-size:0.65rem; color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase; padding: 0.25rem 0;">✦ TropiChat AI suggested a reply</div>
+                    </div>
+                    <div class="tc-stats-row">
+                        <div class="tc-stat-box">
+                            <div class="tc-stat-val">24</div>
+                            <div class="tc-stat-lbl">Chats Today</div>
+                        </div>
+                        <div class="tc-stat-box">
+                            <div class="tc-stat-val">8</div>
+                            <div class="tc-stat-lbl">Bookings</div>
+                        </div>
+                        <div class="tc-stat-box">
+                            <div class="tc-stat-val">$2.1k</div>
+                            <div class="tc-stat-lbl">Revenue</div>
+                        </div>
+                        <div class="tc-stat-box">
+                            <div class="tc-stat-val">94%</div>
+                            <div class="tc-stat-lbl">Reply Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     PROBLEM / WHY IT EXISTS
+     ============================================================ -->
+<section class="section" data-section="The Problem" style="background: var(--graphite-2);">
+    <div class="container">
+        <span class="section-eyebrow">Why TropiChat Exists</span>
+        <h2 class="section-heading reveal">Caribbean Businesses Run<br>on WhatsApp. It's <em style="font-style:italic; color:var(--gold);">Chaos.</em></h2>
+        <p class="section-subheading reveal">Most Caribbean small businesses manage all their customer conversations through one WhatsApp number. It works — until it doesn't.</p>
+
+        <div class="why-grid" style="margin-top: 3.5rem;">
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">💬</div>
+                <h3 class="why-card-title">Conversations Get Buried</h3>
+                <p class="why-card-text">A customer messaged three days ago asking about pricing. You never saw it. They booked with your competitor. That's revenue lost to a missed notification.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">🕐</div>
+                <h3 class="why-card-title">Every Reply Is Manual</h3>
+                <p class="why-card-text">Same questions, every day. "What's the price?" "How many spots?" "Can I book for Saturday?" You're typing the same answers on repeat instead of running your business.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">📋</div>
+                <h3 class="why-card-title">No System. No Records.</h3>
+                <p class="why-card-text">Who booked for which tour? What did that client want last time they came? All of it lives in your head or scattered across a hundred chat threads with no structure.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">📉</div>
+                <h3 class="why-card-title">You Can't See the Business</h3>
+                <p class="why-card-text">How many inquiries did you get this week? What's your conversion rate from chat to booking? You have no idea — because WhatsApp doesn't tell you any of that.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">😤</div>
+                <h3 class="why-card-title">After-Hours Never Ends</h3>
+                <p class="why-card-text">Customers message at 11pm expecting a reply. You're exhausted but feel like you'll lose the booking if you don't respond. There's no off switch when WhatsApp is your storefront.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-card-number" style="font-size:2rem;">💸</div>
+                <h3 class="why-card-title">Leaking Revenue Daily</h3>
+                <p class="why-card-text">Every unanswered message is a potential booking gone. Without a system to capture, track, and follow up with leads, you're leaving money in your chat log.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="section tc-features-section" data-section="Features">
+    <div class="container">
+        <span class="section-eyebrow">What TropiChat Does</span>
+        <h2 class="section-heading reveal">Your WhatsApp,<br>Fully Upgraded.</h2>
+
+        <div class="tc-features-grid">
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">🧠</div>
+                <h3 class="tc-feature-title">AI Smart Replies</h3>
+                <p class="tc-feature-text">TropiChat reads incoming messages and suggests the perfect response — trained on your business, your tours, your prices. Review and send in one tap. Or let it reply automatically after hours.</p>
+            </div>
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">📥</div>
+                <h3 class="tc-feature-title">Unified Inbox</h3>
+                <p class="tc-feature-text">Every customer conversation in one organized dashboard. Tag conversations by status, business type, or urgency. Never lose a message in the scroll again.</p>
+            </div>
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">📅</div>
+                <h3 class="tc-feature-title">Booking Management</h3>
+                <p class="tc-feature-text">Manage your availability, take bookings directly from WhatsApp conversations, and send automatic confirmation and reminder messages — no separate booking tool required.</p>
+            </div>
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">👥</div>
+                <h3 class="tc-feature-title">Customer Database</h3>
+                <p class="tc-feature-text">Every customer who messages you gets a profile — automatically. See their full conversation history, booking history, and notes. Know your regulars before they even introduce themselves.</p>
+            </div>
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">⚡</div>
+                <h3 class="tc-feature-title">Automation Flows</h3>
+                <p class="tc-feature-text">Set rules that run while you sleep. Automatically follow up with leads who haven't booked. Send post-tour review requests. Trigger booking confirmations the moment payment lands.</p>
+            </div>
+            <div class="tc-feature-card">
+                <div class="tc-feature-icon">📊</div>
+                <h3 class="tc-feature-title">Revenue Analytics</h3>
+                <p class="tc-feature-text">See exactly how your WhatsApp is performing — inquiry volume, response times, conversion rates, and revenue tracked per booking. Finally, the numbers your business has been missing.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     WHO IT'S FOR
+     ============================================================ -->
+<section class="section" data-section="Who It's For" style="background: var(--graphite);">
+    <div class="container">
+        <span class="section-eyebrow">Built For</span>
+        <h2 class="section-heading reveal">If You Take Bookings<br>Over WhatsApp, This Is<br><em style="font-style:italic; color:var(--wa-green);">For You.</em></h2>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 4rem; align-items: start;">
+            <div style="background: var(--graphite-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 2rem;" class="reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🚤</div>
+                <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Tour Operators</h3>
+                <p style="font-size: 0.88rem; color: var(--text-dim); line-height: 1.75;">Manage tour inquiries, hold spots, confirm bookings, and send pre-tour information — all from one dashboard. Currently in beta with a Bahamian tour operator.</p>
+            </div>
+            <div style="background: var(--graphite-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 2rem;" class="reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🍽️</div>
+                <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Restaurants</h3>
+                <p style="font-size: 0.88rem; color: var(--text-dim); line-height: 1.75;">Take reservations, handle catering inquiries, manage table availability, and keep regulars informed about specials — automatically.</p>
+            </div>
+            <div style="background: var(--graphite-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 2rem;" class="reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🏨</div>
+                <h3 style="font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Hotels &amp; Guesthouses</h3>
+                <p style="font-size: 0.88rem; color: var(--text-dim); line-height: 1.75;">Handle room inquiries, availability requests, and booking confirmations without being glued to your phone 24/7.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     PRICING
+     ============================================================ -->
+<section class="section tc-pricing-section" data-section="Pricing">
+    <div class="container">
+        <span class="section-eyebrow">Pricing</span>
+        <h2 class="section-heading reveal">Simple, Honest Pricing.<br>Cancel Anytime.</h2>
+        <p class="section-subheading reveal" style="margin-bottom: 0;">Early beta pricing — rates will increase at public launch. Lock in yours now.</p>
+
+        <div class="tc-pricing-grid">
+            <div class="tc-plan-card">
+                <p class="tc-plan-name">Starter</p>
+                <p class="tc-plan-desc">For solo operators just getting organized.</p>
+                <div class="tc-plan-price">
+                    <span class="amount">$29</span>
+                    <span class="period">/ month</span>
+                </div>
+                <div class="tc-plan-features">
+                    <div class="tc-plan-feature">Unified inbox for 1 WhatsApp number</div>
+                    <div class="tc-plan-feature">AI smart reply suggestions</div>
+                    <div class="tc-plan-feature">Up to 300 conversations/month</div>
+                    <div class="tc-plan-feature">Basic customer profiles</div>
+                    <div class="tc-plan-feature">Booking management</div>
+                </div>
+                <a href="https://tropichat.chat" target="_blank" class="btn btn-outline" style="width:100%; justify-content:center;">Get Started →</a>
+            </div>
+
+            <div class="tc-plan-card featured">
+                <div class="tc-plan-tag">Most Popular</div>
+                <p class="tc-plan-name">Growth</p>
+                <p class="tc-plan-desc">For businesses ready to automate and scale.</p>
+                <div class="tc-plan-price">
+                    <span class="amount" style="background: linear-gradient(135deg, var(--wa-green), #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">$79</span>
+                    <span class="period">/ month</span>
+                </div>
+                <div class="tc-plan-features">
+                    <div class="tc-plan-feature">Everything in Starter</div>
+                    <div class="tc-plan-feature">Unlimited conversations</div>
+                    <div class="tc-plan-feature">Full AI auto-reply (after hours)</div>
+                    <div class="tc-plan-feature">Automation flows (follow-ups, reminders)</div>
+                    <div class="tc-plan-feature">Revenue analytics dashboard</div>
+                    <div class="tc-plan-feature">Lead tracking &amp; outreach</div>
+                    <div class="tc-plan-feature">Priority support</div>
+                </div>
+                <a href="https://tropichat.chat" target="_blank" class="btn btn-wa" style="width:100%; justify-content:center;">Get Early Access →</a>
+            </div>
+
+            <div class="tc-plan-card">
+                <p class="tc-plan-name">Business</p>
+                <p class="tc-plan-desc">For teams and high-volume operations.</p>
+                <div class="tc-plan-price">
+                    <span class="amount">$149</span>
+                    <span class="period">/ month</span>
+                </div>
+                <div class="tc-plan-features">
+                    <div class="tc-plan-feature">Everything in Growth</div>
+                    <div class="tc-plan-feature">Multiple team members &amp; roles</div>
+                    <div class="tc-plan-feature">Up to 3 WhatsApp numbers</div>
+                    <div class="tc-plan-feature">Custom AI training on your business</div>
+                    <div class="tc-plan-feature">Advanced automations &amp; integrations</div>
+                    <div class="tc-plan-feature">Dedicated onboarding session</div>
+                </div>
+                <a href="https://tropichat.chat" target="_blank" class="btn btn-outline" style="width:100%; justify-content:center;">Contact Us →</a>
+            </div>
+        </div>
+
+        <p style="text-align: center; font-size: 0.78rem; color: var(--text-muted); margin-top: 1.5rem;">All plans include a 14-day free trial. No credit card required to start.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     MORE PRODUCTS COMING
+     ============================================================ -->
+<section class="section" data-section="Coming Soon" style="background: var(--graphite-2);">
+    <div class="container">
+        <span class="section-eyebrow">From the TropiTech Lab</span>
+        <h2 class="section-heading reveal">TropiChat Is Just the<br>Beginning.</h2>
+        <p class="section-subheading reveal" style="margin-bottom: 3.5rem;">We're building a suite of products designed specifically for Caribbean businesses. TropiChat is live. More are in development.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start;">
+            <div class="tc-coming-soon reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">💳</div>
+                <div class="tc-coming-soon-title">TropiPay</div>
+                <p class="tc-coming-soon-text">Caribbean-first payment infrastructure. Built for the way the region actually transacts.</p>
+                <p style="margin-top: 1rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">In Development</p>
+            </div>
+            <div class="tc-coming-soon reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">⏱️</div>
+                <div class="tc-coming-soon-title">TropiTrack</div>
+                <p class="tc-coming-soon-text">Simple operations and staff management for Caribbean SMBs. No bloat, no enterprise pricing.</p>
+                <p style="margin-top: 1rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">In Development</p>
+            </div>
+            <div class="tc-coming-soon reveal">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🏆</div>
+                <div class="tc-coming-soon-title">TropiPunch</div>
+                <p class="tc-coming-soon-text">Customer loyalty and rewards — built for the Caribbean market where loyalty is everything.</p>
+                <p style="margin-top: 1rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">In Development</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner" data-section="Get Started">
+    <div class="cta-banner-bg"></div>
+    <div class="cta-banner-content">
+        <span class="section-eyebrow" style="justify-content: center;">Early Access</span>
+        <h2 class="cta-banner-heading reveal">
+            Be Among the First<br>Businesses Running on<br>
+            <em>TropiChat.</em>
+        </h2>
+        <p class="cta-banner-sub reveal">
+            Beta pricing is only available for a limited window. Get in early, lock in your rate, and help shape the product as we build it.
+        </p>
+        <div class="cta-banner-actions reveal">
+            <a href="https://tropichat.chat" target="_blank" class="btn btn-wa">Start Free Trial at TropiChat.chat &nbsp;→</a>
+            <a href="contact.html" class="btn btn-outline">Talk to the Team</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-mark">TT</span>
+                    TropiTech Solutions
+                </a>
+                <p class="footer-brand-text">Caribbean-based AI &amp; web design agency — and the team behind TropiChat, TropiPay, TropiTrack, and more.</p>
+            </div>
+            <div>
+                <p class="footer-col-title">Navigation</p>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Products</p>
+                <ul class="footer-links">
+                    <li><a href="https://tropichat.chat" target="_blank">TropiChat ↗</a></li>
+                    <li><a href="products.html#coming-soon">TropiPay (Soon)</a></li>
+                    <li><a href="products.html#coming-soon">TropiTrack (Soon)</a></li>
+                    <li><a href="products.html#coming-soon">TropiPunch (Soon)</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-col-title">Contact</p>
+                <ul class="footer-links">
+                    <li><a href="mailto:hello@tropitech.co">hello@tropitech.co</a></li>
+                    <li><a href="contact.html">Get a Quote</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="#" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© <span id="footer-year"></span> TropiTech Solutions. Caribbean AI &amp; Web Agency. Built by TropiTech.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof gsap === 'undefined') return;
+    // Hero entrance
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl
+        .fromTo('#tc-headline', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.0, delay: 0.2 })
+        .fromTo('#tc-sub',      { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.5')
+        .fromTo('#tc-ctas',     { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.5');
+
+    // Feature cards
+    const tcCards = document.querySelectorAll('.tc-feature-card');
+    if (tcCards.length) {
+        gsap.to(tcCards, {
+            opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1,
+            scrollTrigger: { trigger: '.tc-features-grid', start: 'top 80%', once: true }
+        });
+    }
+    // Pricing cards
+    const planCards = document.querySelectorAll('.tc-plan-card');
+    if (planCards.length) {
+        gsap.to(planCards, {
+            opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.12,
+            scrollTrigger: { trigger: '.tc-pricing-grid', start: 'top 80%', once: true }
+        });
+    }
+});
+</script>
+</body>
+</html>
